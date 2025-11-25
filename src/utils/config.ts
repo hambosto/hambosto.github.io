@@ -11,7 +11,7 @@ export const CONFIG: SiteConfig = {
         title: 'Software Engineer',
         bio: "Just a person who writes code, eats mie ayam, drinks tea, and pretends to know what they're doing.",
         email: 'hambosto@gmail.com',
-        resume: '/resume.pdf',
+        resume: '/portofolio/resume.pdf',
     },
 
     social: {
