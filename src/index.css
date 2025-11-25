@@ -1,0 +1,402 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --terminal-green: #00ff00;
+    --terminal-black: #0a0a0a;
+    --terminal-dim: #003300;
+}
+
+body {
+    background-color: var(--terminal-black);
+    color: var(--terminal-green);
+    font-family: 'Fira Code', monospace;
+    overflow-x: hidden;
+}
+
+/* CRT Scanline Effect */
+.crt::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%,
+            rgba(0, 0, 0, 0.25) 50%);
+    background-size: 100% 2px;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.crt::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(18, 16, 16, 0.1);
+    opacity: 0;
+    z-index: 50;
+    pointer-events: none;
+    animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+    0% {
+        opacity: 0.027906;
+    }
+
+    5% {
+        opacity: 0.048949;
+    }
+
+    10% {
+        opacity: 0.021198;
+    }
+
+    15% {
+        opacity: 0.085028;
+    }
+
+    20% {
+        opacity: 0.047371;
+    }
+
+    25% {
+        opacity: 0.042869;
+    }
+
+    30% {
+        opacity: 0.079551;
+    }
+
+    35% {
+        opacity: 0.024169;
+    }
+
+    40% {
+        opacity: 0.054361;
+    }
+
+    45% {
+        opacity: 0.084693;
+    }
+
+    50% {
+        opacity: 0.096019;
+    }
+
+    55% {
+        opacity: 0.028509;
+    }
+
+    60% {
+        opacity: 0.020313;
+    }
+
+    65% {
+        opacity: 0.071988;
+    }
+
+    70% {
+        opacity: 0.053455;
+    }
+
+    75% {
+        opacity: 0.037288;
+    }
+
+    80% {
+        opacity: 0.063705;
+    }
+
+    85% {
+        opacity: 0.018697;
+    }
+
+    90% {
+        opacity: 0.025321;
+    }
+
+    95% {
+        opacity: 0.075434;
+    }
+
+    100% {
+        opacity: 0.024562;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--terminal-black);
+    border-left: 1px solid var(--terminal-dim);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--terminal-dim);
+    border: 1px solid var(--terminal-green);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--terminal-green);
+}
+
+/* Selection */
+::selection {
+    background: var(--terminal-green);
+    color: var(--terminal-black);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --terminal-green: #00ff00;
+    --terminal-black: #0a0a0a;
+    --terminal-dim: #003300;
+}
+
+body {
+    background-color: var(--terminal-black);
+    color: var(--terminal-green);
+    font-family: 'Fira Code', monospace;
+    overflow-x: hidden;
+}
+
+/* CRT Scanline Effect */
+.crt::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%,
+            rgba(0, 0, 0, 0.25) 50%);
+    background-size: 100% 2px;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.crt::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(18, 16, 16, 0.1);
+    opacity: 0;
+    z-index: 50;
+    pointer-events: none;
+    animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+    0% {
+        opacity: 0.027906;
+    }
+
+    5% {
+        opacity: 0.048949;
+    }
+
+    10% {
+        opacity: 0.021198;
+    }
+
+    15% {
+        opacity: 0.085028;
+    }
+
+    20% {
+        opacity: 0.047371;
+    }
+
+    25% {
+        opacity: 0.042869;
+    }
+
+    30% {
+        opacity: 0.079551;
+    }
+
+    35% {
+        opacity: 0.024169;
+    }
+
+    40% {
+        opacity: 0.054361;
+    }
+
+    45% {
+        opacity: 0.084693;
+    }
+
+    50% {
+        opacity: 0.096019;
+    }
+
+    55% {
+        opacity: 0.028509;
+    }
+
+    60% {
+        opacity: 0.020313;
+    }
+
+    65% {
+        opacity: 0.071988;
+    }
+
+    70% {
+        opacity: 0.053455;
+    }
+
+    75% {
+        opacity: 0.037288;
+    }
+
+    80% {
+        opacity: 0.063705;
+    }
+
+    85% {
+        opacity: 0.018697;
+    }
+
+    90% {
+        opacity: 0.025321;
+    }
+
+    95% {
+        opacity: 0.075434;
+    }
+
+    100% {
+        opacity: 0.024562;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--terminal-black);
+    border-left: 1px solid var(--terminal-dim);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--terminal-dim);
+    border: 1px solid var(--terminal-green);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--terminal-green);
+}
+
+/* Selection */
+::selection {
+    background: var(--terminal-green);
+    color: var(--terminal-black);
+}
+
+/* Utilities */
+.text-shadow {
+    text-shadow: 0 0 5px var(--terminal-green);
+}
+
+.box-glow {
+    box-shadow: 0 0 10px var(--terminal-dim);
+}
+
+/* Glitch Hover Effect */
+.glitch-hover {
+    position: relative;
+    overflow: hidden;
+}
+
+.glitch-hover:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--terminal-green);
+    opacity: 0.1;
+    animation: glitch-anim 0.3s infinite;
+}
+
+@keyframes glitch-anim {
+    0% {
+        transform: translate(0)
+    }
+
+    20% {
+        transform: translate(-2px, 2px)
+    }
+
+    40% {
+        transform: translate(-2px, -2px)
+    }
+
+    60% {
+        transform: translate(2px, 2px)
+    }
+
+    80% {
+        transform: translate(2px, -2px)
+    }
+
+    100% {
+        transform: translate(0)
+    }
+}
+
+/* Scanline Animation for Active Elements */
+.scanline-active {
+    position: relative;
+    overflow: hidden;
+}
+
+.scanline-active::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: rgba(0, 255, 0, 0.3);
+    animation: scanline 2s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes scanline {
+    0% {
+        top: -50%;
+    }
+
+    100% {
+        top: 150%;
+    }
+}
