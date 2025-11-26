@@ -11,11 +11,11 @@ import { DirectoryListing } from './components/terminal/DirectoryListing';
 import { Modules } from './components/terminal/Modules';
 import { MailClient } from './components/terminal/MailClient';
 import { NetworkConnections } from './components/terminal/NetworkConnections';
-import { HackerMode } from './components/terminal/HackerMode';
+import { SnakeGame } from './components/games/SnakeGame';
 
 function App() {
     const { data } = useGitHub(CONFIG.github.username);
-    const [isHackerMode, setIsHackerMode] = useState(false);
+    const [isSnakeMode, setIsSnakeMode] = useState(false);
 
     const whoamiRef = useRef<HTMLDivElement>(null);
     const specsRef = useRef<HTMLDivElement>(null);
@@ -62,11 +62,11 @@ function App() {
             case 'contact':
                 scrollTo(mailRef);
                 break;
-            case 'hack':
-                setIsHackerMode(true);
+            case 'snake':
+                setIsSnakeMode(true);
                 break;
             case 'help':
-                alert('Available commands: whoami, specs, log, ls, modules, netstat, mail, hack');
+                alert('Available commands: whoami, specs, log, ls, modules, netstat, mail, snake');
                 break;
             case 'clear':
                 window.scrollTo(0, 0);
@@ -77,8 +77,9 @@ function App() {
         }
     };
 
-    if (isHackerMode) {
-        return <HackerMode onExit={() => setIsHackerMode(false)} />;
+
+    if (isSnakeMode) {
+        return <SnakeGame onExit={() => setIsSnakeMode(false)} />;
     }
 
     return (
@@ -98,7 +99,7 @@ function App() {
                     <div className="max-w-4xl mx-auto">
                         <CommandPrompt onCommand={handleCommand} />
                         <div className="text-xs text-terminal-dim mt-2">
-                            Try commands: whoami, specs, log, ls, modules, netstat, mail, hack
+                            Try commands: whoami, specs, log, ls, modules, netstat, mail, snake
                         </div>
                     </div>
                 </div>

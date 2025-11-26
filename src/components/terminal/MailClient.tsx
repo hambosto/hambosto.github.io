@@ -19,7 +19,7 @@ export const MailClient: React.FC = () => {
                 <span className="mr-2">{'>'}</span> MAIL_CLIENT
             </h2>
 
-            <div className="border border-terminal-dim p-4 max-w-2xl">
+            <div className="border border-terminal-dim p-4 max-w-4xl">
                 <div className="flex border-b border-terminal-dim pb-2 mb-4">
                     <span className="w-24 text-terminal-dim">To:</span>
                     <span>{CONFIG.personal.email}</span>

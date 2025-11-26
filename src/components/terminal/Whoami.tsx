@@ -3,6 +3,9 @@ import { CONFIG } from '../../utils/config';
 import { formatUptime } from '../../lib/utils';
 import { useTypewriter } from '../../hooks/useTypewriter';
 
+import { HackingStatus } from './HackingStatus';
+import { MatrixRain } from '../ui/MatrixRain';
+
 interface WhoamiProps {
     user: any;
 }
@@ -32,6 +35,35 @@ export const Whoami: React.FC<WhoamiProps> = ({ user }) => {
 `}
                 </pre>
             </div>
+
+            {user?.avatar_url && (
+                <div className="mb-8 border border-terminal-dim p-4 relative">
+                    <div className="absolute top-0 left-0 bg-terminal-dim text-terminal-black px-2 text-xs">AVATAR</div>
+                    <div className="mt-4 flex flex-col sm:flex-row items-center gap-6">
+                        <div className="relative group">
+                            <div className="absolute -inset-0.5 bg-terminal-green opacity-30 blur group-hover:opacity-75 transition duration-200"></div>
+                            <img
+                                src={user.avatar_url}
+                                alt={user.name}
+                                className="relative w-32 h-32 sm:w-40 sm:h-40 grayscale hover:grayscale-0 transition-all duration-300 border border-terminal-green"
+                            />
+                            <div className="absolute inset-0 bg-terminal-green/10 pointer-events-none mix-blend-overlay"></div>
+                        </div>
+                        <div className="flex-1 text-center sm:text-left">
+                            <h3 className="text-xl font-bold text-terminal-green mb-2">{user.name}</h3>
+                            <p className="text-terminal-dim text-sm mb-4">@{user.login}</p>
+                            <p className="text-sm leading-relaxed max-w-2xl">
+                                {user.bio}
+                            </p>
+                            <div className="mt-4 flex flex-wrap justify-center sm:justify-start gap-4 text-xs font-mono text-terminal-dim">
+                                <span>ID: {user.id}</span>
+                                <span>CREATED: {new Date(user.created_at).toLocaleDateString()}</span>
+                                <span>PUBLIC_REPOS: {user.public_repos}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="border border-terminal-dim p-4 relative">
@@ -82,6 +114,15 @@ export const Whoami: React.FC<WhoamiProps> = ({ user }) => {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <HackingStatus />
+
+            <div className="mt-8 border border-terminal-dim relative h-64">
+                <div className="absolute top-0 left-0 bg-terminal-dim text-terminal-black px-2 text-xs z-10">MATRIX_LINK</div>
+                <div className="w-full h-full">
+                    <MatrixRain />
                 </div>
             </div>
         </div>
