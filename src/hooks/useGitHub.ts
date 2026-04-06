@@ -11,9 +11,11 @@ interface UseGitHubReturn {
 
 const calculateLanguageStats = (repos: GitHubRepo[]): LanguageStats => {
     const stats: LanguageStats = {};
+    const bytes: Record<string, number> = {};
     repos.forEach((repo) => {
         if (repo.language) {
             stats[repo.language] = (stats[repo.language] || 0) + 1;
+            bytes[repo.language] = (bytes[repo.language] || 0) + (repo.size || 0);
         }
     });
     return stats;
@@ -31,21 +33,15 @@ export const useGitHub = (username: string, token?: string): UseGitHubReturn => 
 
             const options = { token };
 
-            // Fetch user data
             const user = await fetchGitHubUser(username, options);
-
-            // Fetch repositories
             const allRepos = await fetchGitHubRepos(username, options);
-
-            // Filter out forks
             const repos = allRepos.filter((repo) => !repo.fork);
-
-            // Fetch events
             const events = await fetchGitHubEvents(username, options);
 
-            // Calculate language stats and total stars
             const languageStats = calculateLanguageStats(repos);
             const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+            const totalForks = repos.reduce((sum, repo) => sum + repo.forks_count, 0);
+            const topRepo = [...repos].sort((a, b) => b.stargazers_count - a.stargazers_count)[0];
 
             setData({
                 user,
@@ -53,6 +49,8 @@ export const useGitHub = (username: string, token?: string): UseGitHubReturn => 
                 events,
                 languageStats,
                 totalStars,
+                totalForks,
+                topRepo,
             });
         } catch (err) {
             setError(err instanceof Error ? err : new Error('Unknown error'));

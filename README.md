@@ -20,20 +20,22 @@ A personal portfolio website built with React, TypeScript, and Tailwind CSS.
 ## Running Locally
 
 1. Clone the repo:
-   ```bash
-   git clone https://github.com/hambosto/portofolio-web.git
-   cd portofolio-web
-   ```
+
+    ```bash
+    git clone https://github.com/hambosto/portofolio-web.git
+    cd portofolio-web
+    ```
 
 2. Install dependencies:
-   ```bash
-   npm install
-   ```
+
+    ```bash
+    npm install
+    ```
 
 3. Start development server:
-   ```bash
-   npm run dev
-   ```
+    ```bash
+    npm run dev
+    ```
 
 ## Configuration
 

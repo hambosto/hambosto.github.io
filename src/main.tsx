@@ -3,7 +3,10 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.tsx';
 
-class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
+class ErrorBoundary extends Component<
+    { children: ReactNode },
+    { hasError: boolean; error: Error | null }
+> {
     constructor(props: { children: ReactNode }) {
         super(props);
         this.state = { hasError: false, error: null };
@@ -14,7 +17,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
     }
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        console.error("Uncaught error:", error, errorInfo);
+        console.error('Uncaught error:', error, errorInfo);
     }
 
     render() {

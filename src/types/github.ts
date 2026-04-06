@@ -62,4 +62,6 @@ export interface GitHubData {
     events: GitHubEvent[];
     languageStats: LanguageStats;
     totalStars: number;
+    totalForks: number;
+    topRepo?: GitHubRepo;
 }
