@@ -89,12 +89,15 @@ export const StartMenu: React.FC<StartMenuProps> = ({ onClose, githubData }) => 
                 )}
                 <div className="flex-1 min-w-0">
                     <div
-                        className="text-sm font-bold truncate"
-                        style={{ color: 'var(--color-text)' }}
+                        className="text-sm font-bold"
+                        style={{ color: 'var(--color-text)', wordBreak: 'break-word' }}
                     >
                         {user?.name || CONFIG.personal.name}
                     </div>
-                    <div className="text-xs truncate" style={{ color: 'var(--color-text-dim)' }}>
+                    <div
+                        className="text-xs"
+                        style={{ color: 'var(--color-text-dim)', wordBreak: 'break-word' }}
+                    >
                         {user?.bio || CONFIG.personal.title}
                     </div>
                 </div>

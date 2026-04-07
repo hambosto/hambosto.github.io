@@ -112,19 +112,26 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
                 <Wallpaper />
                 <div
                     className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                    style={{ opacity: 0.02 }}
+                    style={{ opacity: 0.08 }}
                 >
                     <pre
-                        className="text-xs sm:text-sm ascii-art hidden sm:block"
-                        style={{ color: 'var(--color-primary)' }}
+                        className="ascii-art hidden sm:block"
+                        style={{
+                            color: 'var(--color-primary)',
+                            fontSize: 'clamp(6px, 1.2vw, 14px)',
+                            lineHeight: '1.1',
+                            letterSpacing: '2px',
+                            textShadow:
+                                '0 0 20px var(--color-primary-glow-strong), 0 0 40px var(--color-primary-glow)',
+                        }}
                     >
                         {`
- ██████╗ ██╗   ██╗███╗   ██╗██╗  ██╗
-██╔════╝ ╚██╗ ██╔╝████╗  ██║██║  ██║
-██║  ███╗ ╚████╔╝ ██╔██╗ ██║███████║
-██║   ██║  ╚██╔╝  ██║╚██╗██║╚════██║
-╚██████╔╝   ██║   ██║ ╚████║     ██║
- ╚═════╝    ╚═╝   ╚═╝  ╚═══╝     ╚═╝
+██╗  ██╗ █████╗ ███╗   ███╗██████╗  ██████╗ ███████╗████████╗ ██████╗ 
+██║  ██║██╔══██╗████╗ ████║██╔══██╗██╔═══██╗██╔════╝╚══██╔══╝██╔═══██╗
+███████║███████║██╔████╔██║██████╔╝██║   ██║███████╗   ██║   ██║   ██║
+██╔══██║██╔══██║██║╚██╔╝██║██╔══██╗██║   ██║╚════██║   ██║   ██║   ██║
+██║  ██║██║  ██║██║ ╚═╝ ██║██████╔╝╚██████╔╝███████║   ██║   ╚██████╔╝
+╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝  ╚═════╝ ╚══════╝   ╚═╝    ╚═════╝ 
 `}
                     </pre>
                 </div>

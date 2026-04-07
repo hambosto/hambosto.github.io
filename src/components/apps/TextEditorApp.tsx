@@ -23,19 +23,79 @@ export const TextEditorApp: React.FC<TextEditorAppProps> = ({ user }) => {
                 </span>
             </div>
             <div className="flex-1 overflow-y-auto p-6 font-mono text-sm leading-relaxed">
+                {/* Profile Header */}
                 <div
-                    className="mb-6 pb-4"
+                    className="mb-6 pb-4 flex items-start gap-4"
                     style={{ borderBottom: '1px solid var(--color-border)' }}
                 >
-                    <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>
-                        {CONFIG.personal.name}
-                    </h1>
-                    <p className="text-base" style={{ color: 'var(--color-primary)' }}>
-                        {CONFIG.personal.title}
-                    </p>
-                    <p className="mt-2" style={{ color: 'var(--color-text-dim)' }}>
-                        {CONFIG.personal.bio}
-                    </p>
+                    {user?.avatar_url && (
+                        <div className="relative flex-shrink-0">
+                            <img
+                                src={user.avatar_url}
+                                alt={user.name || user.login}
+                                className="w-20 h-20 rounded-sm"
+                                style={{
+                                    border: '2px solid var(--color-primary-dark)',
+                                    boxShadow: '0 0 12px var(--color-primary-glow)',
+                                }}
+                            />
+                            <div
+                                className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2"
+                                style={{
+                                    backgroundColor: 'var(--color-success)',
+                                    borderColor: '#0a0a0a',
+                                }}
+                            />
+                        </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                        <h1
+                            className="text-2xl font-bold mb-1"
+                            style={{ color: 'var(--color-text)' }}
+                        >
+                            {user?.name || CONFIG.personal.name}
+                        </h1>
+                        <p className="text-sm mb-2" style={{ color: 'var(--color-primary)' }}>
+                            {CONFIG.personal.title}
+                        </p>
+                        {user?.bio && (
+                            <p className="text-sm mb-2" style={{ color: 'var(--color-text-dim)' }}>
+                                {user.bio}
+                            </p>
+                        )}
+                        <div
+                            className="flex flex-wrap gap-3 text-xs"
+                            style={{ color: 'var(--color-text-muted)' }}
+                        >
+                            {user?.location && (
+                                <span>
+                                    <i className="fas fa-map-marker-alt mr-1" />
+                                    {user.location}
+                                </span>
+                            )}
+                            {user?.blog && (
+                                <a
+                                    href={
+                                        user.blog.startsWith('http')
+                                            ? user.blog
+                                            : `https://${user.blog}`
+                                    }
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    style={{ color: 'var(--color-primary)' }}
+                                >
+                                    <i className="fas fa-link mr-1" />
+                                    {user.blog}
+                                </a>
+                            )}
+                            {user?.company && (
+                                <span>
+                                    <i className="fas fa-building mr-1" />
+                                    {user.company}
+                                </span>
+                            )}
+                        </div>
+                    </div>
                 </div>
 
                 <div className="mb-6">
