@@ -26,13 +26,13 @@ export const SystemMonitorApp: React.FC = () => {
     );
 
     return (
-        <div className="h-full flex flex-col overflow-hidden" style={{ backgroundColor: '#0a0a0a' }}>
+        <div className="h-full flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--color-bg)' }}>
             {/* Header Stats */}
             <div
                 className="p-4 flex-shrink-0"
                 style={{
                     borderBottom: '1px solid var(--color-border)',
-                    backgroundColor: '#111111',
+                    backgroundColor: 'var(--color-bg-light)',
                 }}
             >
                 <div className="flex items-center gap-2 mb-3">

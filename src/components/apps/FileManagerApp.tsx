@@ -35,12 +35,12 @@ export const FileManagerApp: React.FC<FileManagerAppProps> = ({ githubData }) =>
     );
 
     return (
-        <div className="h-full flex flex-col" style={{ backgroundColor: '#0a0a0a' }}>
+        <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--color-bg)' }}>
             <div
                 className="flex items-center justify-between px-3 py-2 text-xs font-mono"
                 style={{
                     borderBottom: '1px solid var(--color-border)',
-                    backgroundColor: '#111111',
+                    backgroundColor: 'var(--color-bg-light)',
                 }}
             >
                 <div className="flex items-center gap-2">
@@ -55,7 +55,7 @@ export const FileManagerApp: React.FC<FileManagerAppProps> = ({ githubData }) =>
                         placeholder="Search repos..."
                         className="px-2 py-1 text-xs rounded-sm border outline-none"
                         style={{
-                            backgroundColor: '#0a0a0a',
+                            backgroundColor: 'var(--color-bg)',
                             borderColor: 'var(--color-border)',
                             color: 'var(--color-text)',
                             width: 160,

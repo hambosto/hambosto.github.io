@@ -105,8 +105,8 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
               width: '100%',
               height: '100%',
               zIndex: win.zIndex,
-              backgroundColor: '#0a0a0a',
-          }
+               backgroundColor: 'var(--color-bg)',
+           }
         : {
               position: 'absolute',
               left: win.x,
@@ -114,7 +114,7 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
               width: win.width,
               height: win.height,
               zIndex: win.zIndex,
-              backgroundColor: '#0a0a0a',
+              backgroundColor: 'var(--color-bg)',
           };
 
     return (
@@ -128,7 +128,7 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
                 className="window-titlebar"
                 onMouseDown={handleMouseDown}
                 style={{
-                    backgroundColor: '#111111',
+                    backgroundColor: 'var(--color-bg-light)',
                     borderBottomColor: 'var(--color-border)',
                 }}
             >

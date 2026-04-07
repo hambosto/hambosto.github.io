@@ -25,7 +25,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, avatarUrl }) 
     };
 
     return (
-        <div className="login-screen" style={{ backgroundColor: '#050505' }}>
+        <div className="login-screen" style={{ backgroundColor: 'var(--color-bg-dark)' }}>
             <div className={`flex flex-col items-center ${shake ? 'animate-pulse' : ''}`}>
                 {avatarUrl ? (
                     <img

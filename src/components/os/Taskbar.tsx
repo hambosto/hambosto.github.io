@@ -32,7 +32,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({ githubData }) => {
                 className="taskbar"
                 onClick={(e) => e.stopPropagation()}
                 style={{
-                    backgroundColor: '#0a0a0a',
+                    backgroundColor: 'var(--color-bg)',
                     borderTopColor: 'var(--color-border)',
                 }}
             >

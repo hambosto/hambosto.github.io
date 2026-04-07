@@ -4,6 +4,15 @@ const GRID = 20;
 const CELL = 20;
 const DIRS = [{ x: 0, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }];
 
+type Difficulty = 'easy' | 'normal' | 'hard' | 'insane';
+
+const DIFFICULTY_CONFIG: Record<Difficulty, { speed: number; label: string; color: string }> = {
+    easy:   { speed: 180, label: 'EASY',   color: '#00ff41' },
+    normal: { speed: 120, label: 'NORMAL', color: '#ffb000' },
+    hard:   { speed: 70,  label: 'HARD',   color: '#ff6600' },
+    insane: { speed: 40,  label: 'INSANE', color: '#ff0040' },
+};
+
 type Pos = { x: number; y: number };
 
 const randomFood = (snake: Pos[]): Pos => {
@@ -22,6 +31,7 @@ export const SnakeGame: React.FC = () => {
     const [gameOver, setGameOver] = useState(false);
     const [started, setStarted] = useState(false);
     const [paused, setPaused] = useState(false);
+    const [difficulty, setDifficulty] = useState<Difficulty>('normal');
     const dirRef = useRef(dir);
     const snakeRef = useRef(snake);
     const foodRef = useRef(food);
@@ -36,6 +46,8 @@ export const SnakeGame: React.FC = () => {
     gameOverRef.current = gameOver;
     pausedRef.current = paused;
     startedRef.current = started;
+
+    const diff = DIFFICULTY_CONFIG[difficulty];
 
     const reset = useCallback(() => {
         const s = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
@@ -70,9 +82,9 @@ export const SnakeGame: React.FC = () => {
 
     useEffect(() => {
         if (!started || gameOver || paused) return;
-        const t = setInterval(tick, 120);
+        const t = setInterval(tick, DIFFICULTY_CONFIG[difficulty].speed);
         return () => clearInterval(t);
-    }, [started, gameOver, paused, tick]);
+    }, [started, gameOver, paused, tick, difficulty]);
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
@@ -123,11 +135,30 @@ export const SnakeGame: React.FC = () => {
     const btnStyle = { borderColor: 'var(--color-primary)', color: 'var(--color-primary)', backgroundColor: 'var(--color-primary-glow)' };
 
     return (
-        <div className="h-full flex flex-col items-center justify-center p-2 sm:p-4" style={{ backgroundColor: '#0a0a0a' }}>
+        <div className="h-full flex flex-col items-center justify-center p-2 sm:p-4" style={{ backgroundColor: 'var(--color-bg)' }}>
             <div className="text-sm font-bold mb-2 sm:mb-3" style={{ color: 'var(--color-text)' }}>
                 <i className="fas fa-gamepad mr-2" style={{ color: 'var(--color-primary)' }} />
                 SNAKE
             </div>
+
+            {/* Difficulty selector */}
+            <div className="flex gap-1.5 mb-3">
+                {(Object.keys(DIFFICULTY_CONFIG) as Difficulty[]).map(d => (
+                    <button
+                        key={d}
+                        className="px-3 py-1 text-[10px] font-bold rounded-sm border transition-all"
+                        style={{
+                            borderColor: difficulty === d ? DIFFICULTY_CONFIG[d].color : 'var(--color-border)',
+                            color: difficulty === d ? DIFFICULTY_CONFIG[d].color : 'var(--color-text-muted)',
+                            backgroundColor: difficulty === d ? `${DIFFICULTY_CONFIG[d].color}22` : 'transparent',
+                        }}
+                        onClick={() => { setDifficulty(d); setStarted(false); setGameOver(false); }}
+                    >
+                        {DIFFICULTY_CONFIG[d].label}
+                    </button>
+                ))}
+            </div>
+
             <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 items-center">
                 <div className="flex flex-col items-center gap-2">
                     <div
@@ -156,13 +187,14 @@ export const SnakeGame: React.FC = () => {
                         {(gameOver || paused || !started) && (
                             <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}>
                                 <div className="text-center">
-                                    <div className="text-lg font-bold mb-2" style={{ color: 'var(--color-primary)' }}>
+                                    <div className="text-lg font-bold mb-1" style={{ color: diff.color }}>
                                         {gameOver ? 'GAME OVER' : paused ? 'PAUSED' : 'SNAKE'}
                                     </div>
+                                    <div className="text-[10px] mb-2" style={{ color: diff.color }}>{diff.label} MODE</div>
                                     {!started && <div className="text-xs mb-3" style={{ color: 'var(--color-text-dim)' }}>Press Start to play</div>}
                                     {gameOver && <div className="text-xs mb-3" style={{ color: 'var(--color-text-dim)' }}>Score: {score}</div>}
                                     <button onClick={reset} className="px-4 py-2 text-xs font-bold rounded-sm border"
-                                        style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)', backgroundColor: 'var(--color-primary-glow)' }}>
+                                        style={{ borderColor: diff.color, color: diff.color, backgroundColor: `${diff.color}22` }}>
                                         {gameOver || !started ? 'START' : 'RESUME'}
                                     </button>
                                 </div>

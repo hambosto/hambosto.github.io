@@ -551,7 +551,7 @@ export const TerminalApp: React.FC<TerminalAppProps> = ({ githubData }) => {
     return (
         <div
             className="h-full flex flex-col p-3 font-mono text-xs sm:text-sm"
-            style={{ backgroundColor: '#0a0a0a' }}
+            style={{ backgroundColor: 'var(--color-bg)' }}
             onClick={() => inputRef.current?.focus()}
         >
             <div

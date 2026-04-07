@@ -75,7 +75,7 @@ export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
     return (
         <div
             className="fixed inset-0 z-[100000] p-6 sm:p-12 font-mono flex flex-col justify-end"
-            style={{ backgroundColor: '#050505' }}
+            style={{ backgroundColor: 'var(--color-bg-dark)' }}
         >
             <div className="max-w-2xl mx-auto w-full">
                 {lines.map((line, i) => (

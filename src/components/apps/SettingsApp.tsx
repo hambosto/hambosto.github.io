@@ -8,13 +8,13 @@ export const SettingsApp: React.FC = () => {
     return (
         <div
             className="h-full flex flex-col overflow-hidden"
-            style={{ backgroundColor: '#0a0a0a' }}
+            style={{ backgroundColor: 'var(--color-bg)' }}
         >
             <div
                 className="p-4"
                 style={{
                     borderBottom: '1px solid var(--color-border)',
-                    backgroundColor: '#111111',
+                    backgroundColor: 'var(--color-bg-light)',
                 }}
             >
                 <div className="flex items-center gap-2 mb-3">

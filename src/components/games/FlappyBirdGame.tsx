@@ -4,10 +4,15 @@ const WIDTH = 320;
 const HEIGHT = 480;
 const BIRD_SIZE = 20;
 const PIPE_WIDTH = 40;
-const PIPE_GAP = 120;
-const GRAVITY = 0.4;
-const JUMP = -6;
-const PIPE_SPEED = 2.5;
+
+type Difficulty = 'easy' | 'normal' | 'hard' | 'insane';
+
+const DIFFICULTY_CONFIG: Record<Difficulty, { pipeGap: number; pipeSpeed: number; gravity: number; label: string; color: string }> = {
+    easy:   { pipeGap: 160, pipeSpeed: 2.0, gravity: 0.35, label: 'EASY',   color: '#00ff41' },
+    normal: { pipeGap: 120, pipeSpeed: 2.5, gravity: 0.40, label: 'NORMAL', color: '#ffb000' },
+    hard:   { pipeGap: 90,  pipeSpeed: 3.2, gravity: 0.45, label: 'HARD',   color: '#ff6600' },
+    insane: { pipeGap: 65,  pipeSpeed: 4.0, gravity: 0.55, label: 'INSANE', color: '#ff0040' },
+};
 
 interface Pipe {
     x: number;
@@ -19,6 +24,9 @@ export const FlappyBirdGame: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [score, setScore] = useState(0);
     const [bestScore, setBestScore] = useState(0);
+    const [difficulty, setDifficulty] = useState<Difficulty>('normal');
+
+    const diff = DIFFICULTY_CONFIG[difficulty];
 
     const stateRef = useRef({
         birdY: HEIGHT / 2,
@@ -28,6 +36,7 @@ export const FlappyBirdGame: React.FC = () => {
         gameOver: false,
         started: false,
         frame: 0,
+        difficulty,
     });
 
     const reset = useCallback(() => {
@@ -39,9 +48,10 @@ export const FlappyBirdGame: React.FC = () => {
             gameOver: false,
             started: true,
             frame: 0,
+            difficulty,
         };
         setScore(0);
-    }, []);
+    }, [difficulty]);
 
     const jump = useCallback(() => {
         const s = stateRef.current;
@@ -50,8 +60,12 @@ export const FlappyBirdGame: React.FC = () => {
             reset();
             return;
         }
-        s.birdVel = JUMP;
+        s.birdVel = -6;
     }, [reset]);
+
+    useEffect(() => {
+        stateRef.current.difficulty = difficulty;
+    }, [difficulty]);
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
@@ -74,6 +88,7 @@ export const FlappyBirdGame: React.FC = () => {
 
         const draw = () => {
             const s = stateRef.current;
+            const cfg = DIFFICULTY_CONFIG[s.difficulty];
             ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
             ctx.fillStyle = '#0a0a0a';
@@ -89,7 +104,7 @@ export const FlappyBirdGame: React.FC = () => {
             }
 
             if (!s.started && !s.gameOver) {
-                ctx.fillStyle = 'var(--color-text, #00ff41)';
+                ctx.fillStyle = cfg.color;
                 ctx.font = 'bold 24px monospace';
                 ctx.textAlign = 'center';
                 ctx.fillText('FLAPPY BIRD', WIDTH / 2, HEIGHT / 2 - 20);
@@ -101,17 +116,17 @@ export const FlappyBirdGame: React.FC = () => {
             }
 
             if (s.started && !s.gameOver) {
-                s.birdVel += GRAVITY;
+                s.birdVel += cfg.gravity;
                 s.birdY += s.birdVel;
 
                 s.frame++;
                 if (s.frame % 90 === 0) {
-                    const topH = Math.random() * (HEIGHT - PIPE_GAP - 100) + 40;
+                    const topH = Math.random() * (HEIGHT - cfg.pipeGap - 100) + 40;
                     s.pipes.push({ x: WIDTH, topHeight: topH, scored: false });
                 }
 
                 for (const pipe of s.pipes) {
-                    pipe.x -= PIPE_SPEED;
+                    pipe.x -= cfg.pipeSpeed;
                 }
                 s.pipes = s.pipes.filter(p => p.x > -PIPE_WIDTH);
 
@@ -127,7 +142,7 @@ export const FlappyBirdGame: React.FC = () => {
 
                 for (const pipe of s.pipes) {
                     if (birdRight > pipe.x && birdLeft < pipe.x + PIPE_WIDTH) {
-                        if (birdTop < pipe.topHeight || birdBottom > pipe.topHeight + PIPE_GAP) {
+                        if (birdTop < pipe.topHeight || birdBottom > pipe.topHeight + cfg.pipeGap) {
                             s.gameOver = true;
                             setBestScore(b => Math.max(b, s.score));
                         }
@@ -149,7 +164,7 @@ export const FlappyBirdGame: React.FC = () => {
                 ctx.fillStyle = primaryColor;
                 ctx.fillRect(pipe.x + 2, 0, PIPE_WIDTH - 4, pipe.topHeight - 2);
 
-                const bottomY = pipe.topHeight + PIPE_GAP;
+                const bottomY = pipe.topHeight + cfg.pipeGap;
                 ctx.fillStyle = primaryDark;
                 ctx.fillRect(pipe.x, bottomY, PIPE_WIDTH, HEIGHT - bottomY);
                 ctx.fillStyle = primaryColor;
@@ -174,14 +189,16 @@ export const FlappyBirdGame: React.FC = () => {
             if (s.gameOver) {
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
                 ctx.fillRect(0, 0, WIDTH, HEIGHT);
-                ctx.fillStyle = 'var(--color-error, #ff4466)';
+                ctx.fillStyle = cfg.color;
                 ctx.font = 'bold 24px monospace';
                 ctx.textAlign = 'center';
                 ctx.fillText('GAME OVER', WIDTH / 2, HEIGHT / 2 - 30);
+                ctx.font = '12px monospace';
+                ctx.fillText(`${cfg.label} MODE`, WIDTH / 2, HEIGHT / 2 - 10);
                 ctx.fillStyle = 'var(--color-text-dim, #00cc33)';
                 ctx.font = '16px monospace';
-                ctx.fillText(`Score: ${s.score}`, WIDTH / 2, HEIGHT / 2 + 10);
-                ctx.fillText('Press Space or Tap', WIDTH / 2, HEIGHT / 2 + 40);
+                ctx.fillText(`Score: ${s.score}`, WIDTH / 2, HEIGHT / 2 + 20);
+                ctx.fillText('Press Space or Tap', WIDTH / 2, HEIGHT / 2 + 50);
             }
 
             animId = requestAnimationFrame(draw);
@@ -192,11 +209,30 @@ export const FlappyBirdGame: React.FC = () => {
     }, []);
 
     return (
-        <div className="h-full flex flex-col items-center justify-center p-2 sm:p-4" style={{ backgroundColor: '#0a0a0a' }}>
+        <div className="h-full flex flex-col items-center justify-center p-2 sm:p-4" style={{ backgroundColor: 'var(--color-bg)' }}>
             <div className="text-sm font-bold mb-2 sm:mb-3" style={{ color: 'var(--color-text)' }}>
                 <i className="fas fa-dove mr-2" style={{ color: 'var(--color-primary)' }} />
                 FLAPPY BIRD
             </div>
+
+            {/* Difficulty selector */}
+            <div className="flex gap-1.5 mb-3">
+                {(Object.keys(DIFFICULTY_CONFIG) as Difficulty[]).map(d => (
+                    <button
+                        key={d}
+                        className="px-3 py-1 text-[10px] font-bold rounded-sm border transition-all"
+                        style={{
+                            borderColor: difficulty === d ? DIFFICULTY_CONFIG[d].color : 'var(--color-border)',
+                            color: difficulty === d ? DIFFICULTY_CONFIG[d].color : 'var(--color-text-muted)',
+                            backgroundColor: difficulty === d ? `${DIFFICULTY_CONFIG[d].color}22` : 'transparent',
+                        }}
+                        onClick={() => { setDifficulty(d); setScore(0); }}
+                    >
+                        {DIFFICULTY_CONFIG[d].label}
+                    </button>
+                ))}
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center">
                 <canvas
                     ref={canvasRef}
@@ -209,7 +245,7 @@ export const FlappyBirdGame: React.FC = () => {
                 />
                 <div className="flex flex-row sm:flex-col gap-2 sm:gap-3 sm:space-y-3">
                     <button onClick={reset} className="px-4 py-2 text-xs font-bold rounded-sm border"
-                        style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)', backgroundColor: 'var(--color-primary-glow)' }}>
+                        style={{ borderColor: diff.color, color: diff.color, backgroundColor: `${diff.color}22` }}>
                         NEW GAME
                     </button>
                     {[['Score', score], ['Best', bestScore]].map(([label, val]) => (

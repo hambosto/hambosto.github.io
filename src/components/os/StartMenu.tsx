@@ -44,7 +44,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ onClose, githubData }) => 
             className="start-menu"
             onClick={(e) => e.stopPropagation()}
             style={{
-                backgroundColor: '#0a0a0a',
+                backgroundColor: 'var(--color-bg)',
                 borderColor: 'var(--color-border)',
                 boxShadow: '0 -4px 24px rgba(0,0,0,0.8), 0 0 1px var(--color-primary-dark)',
             }}
@@ -54,7 +54,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ onClose, githubData }) => 
                 className="start-menu-header"
                 style={{
                     borderBottomColor: 'var(--color-border)',
-                    backgroundColor: '#111111',
+                    backgroundColor: 'var(--color-bg-light)',
                 }}
             >
                 {user?.avatar_url ? (
@@ -68,7 +68,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ onClose, githubData }) => 
                     <div
                         className="w-10 h-10 rounded-sm flex items-center justify-center text-lg"
                         style={{
-                            backgroundColor: '#0a0a0a',
+                backgroundColor: 'var(--color-bg)',
                             border: '2px solid var(--color-border-active)',
                         }}
                     >
@@ -143,7 +143,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ onClose, githubData }) => 
                 style={{
                     borderTop: '1px solid var(--color-border)',
                     color: 'var(--color-text-dim)',
-                    backgroundColor: '#111111',
+                    backgroundColor: 'var(--color-bg-light)',
                 }}
             >
                 <span>Portfolio OS v3.0.2</span>

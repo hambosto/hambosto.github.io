@@ -47,12 +47,12 @@ export const MailClientApp: React.FC = () => {
     };
 
     return (
-        <div className="h-full flex flex-col" style={{ backgroundColor: '#0a0a0a' }}>
+        <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--color-bg)' }}>
             <div
                 className="flex items-center gap-2 px-3 py-2 text-xs font-mono"
                 style={{
                     borderBottom: '1px solid var(--color-border)',
-                    backgroundColor: '#111111',
+                    backgroundColor: 'var(--color-bg-light)',
                 }}
             >
                 <i className="fas fa-envelope" style={{ color: 'var(--color-primary)' }} />
@@ -62,7 +62,7 @@ export const MailClientApp: React.FC = () => {
                 <div
                     className="flex items-center gap-3 mb-6 p-3 rounded-sm"
                     style={{
-                        backgroundColor: '#111111',
+                        backgroundColor: 'var(--color-bg-light)',
                         border: '1px solid var(--color-border)',
                     }}
                 >
