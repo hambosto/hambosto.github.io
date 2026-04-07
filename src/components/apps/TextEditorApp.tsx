@@ -55,9 +55,14 @@ export const TextEditorApp: React.FC<TextEditorAppProps> = ({ user }) => {
                         >
                             {user?.name || CONFIG.personal.name}
                         </h1>
-                        <p className="text-sm mb-2" style={{ color: 'var(--color-primary)' }}>
+                        <p className="text-sm mb-1" style={{ color: 'var(--color-primary)' }}>
                             {CONFIG.personal.title}
                         </p>
+                        {CONFIG.personal.subtitle && (
+                            <p className="text-xs mb-2" style={{ color: 'var(--color-text-dim)' }}>
+                                {CONFIG.personal.subtitle}
+                            </p>
+                        )}
                         {user?.bio && (
                             <p className="text-sm mb-2" style={{ color: 'var(--color-text-dim)' }}>
                                 {user.bio}
@@ -98,6 +103,18 @@ export const TextEditorApp: React.FC<TextEditorAppProps> = ({ user }) => {
                     </div>
                 </div>
 
+                {/* About */}
+                <div className="mb-6">
+                    <h2 className="text-base font-bold mb-3" style={{ color: 'var(--color-text)' }}>
+                        <i className="fas fa-user mr-2" style={{ color: 'var(--color-primary)' }} />
+                        About
+                    </h2>
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-dim)' }}>
+                        {CONFIG.personal.bio}
+                    </p>
+                </div>
+
+                {/* Quick Stats */}
                 <div className="mb-6">
                     <h2 className="text-base font-bold mb-3" style={{ color: 'var(--color-text)' }}>
                         <i
@@ -153,6 +170,76 @@ export const TextEditorApp: React.FC<TextEditorAppProps> = ({ user }) => {
                     </div>
                 </div>
 
+                {/* Education */}
+                {CONFIG.education && CONFIG.education.length > 0 && (
+                    <div className="mb-6">
+                        <h2 className="text-base font-bold mb-3" style={{ color: 'var(--color-text)' }}>
+                            <i className="fas fa-graduation-cap mr-2" style={{ color: 'var(--color-primary)' }} />
+                            Education
+                        </h2>
+                        <div className="space-y-4">
+                            {CONFIG.education.map((edu, i) => (
+                                <div
+                                    key={i}
+                                    className="pl-4 relative"
+                                    style={{ borderLeft: '2px solid var(--color-primary)' }}
+                                >
+                                    <div
+                                        className="absolute -left-1.5 top-1 w-3 h-3 rounded-full"
+                                        style={{
+                                            backgroundColor: 'var(--color-primary)',
+                                            boxShadow: '0 0 6px var(--color-primary-glow-strong)',
+                                        }}
+                                    />
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>
+                                            {edu.degree} in {edu.field}
+                                        </span>
+                                        <span
+                                            className="text-xs px-2 py-0.5 rounded-sm"
+                                            style={{
+                                                backgroundColor: edu.endDate
+                                                    ? 'var(--color-bg-light)'
+                                                    : 'var(--color-primary-glow)',
+                                                color: edu.endDate
+                                                    ? 'var(--color-text-muted)'
+                                                    : 'var(--color-primary)',
+                                                border: `1px solid ${edu.endDate ? 'var(--color-border)' : 'var(--color-primary)'}`,
+                                            }}
+                                        >
+                                            {edu.endDate ? 'Graduated' : 'Enrolled'}
+                                        </span>
+                                    </div>
+                                    <div className="text-xs mb-2" style={{ color: 'var(--color-text-dim)' }}>
+                                        {edu.institution} · {edu.startDate} – {edu.endDate || 'Present'}
+                                        {edu.location && ` · ${edu.location}`}
+                                    </div>
+                                    {edu.description && (
+                                        <div className="text-xs mb-2" style={{ color: 'var(--color-text-dim)' }}>
+                                            {edu.description}
+                                        </div>
+                                    )}
+                                    {edu.achievements && edu.achievements.length > 0 && (
+                                        <div className="space-y-1">
+                                            {edu.achievements.map((a, j) => (
+                                                <div
+                                                    key={j}
+                                                    className="text-xs flex items-start gap-2"
+                                                    style={{ color: 'var(--color-text-dim)' }}
+                                                >
+                                                    <span style={{ color: 'var(--color-primary)' }}>✓</span>
+                                                    <span>{a}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Experience */}
                 <div className="mb-6">
                     <h2 className="text-base font-bold mb-3" style={{ color: 'var(--color-text)' }}>
                         <i
@@ -202,6 +289,7 @@ export const TextEditorApp: React.FC<TextEditorAppProps> = ({ user }) => {
                                     style={{ color: 'var(--color-text-dim)' }}
                                 >
                                     {exp.company} · {exp.startDate} – {exp.endDate || 'Present'}
+                                    {exp.location && ` · ${exp.location}`}
                                 </div>
                                 <div
                                     className="text-xs mb-2"
@@ -209,7 +297,7 @@ export const TextEditorApp: React.FC<TextEditorAppProps> = ({ user }) => {
                                 >
                                     {exp.description}
                                 </div>
-                                <div className="flex flex-wrap gap-1.5">
+                                <div className="flex flex-wrap gap-1.5 mb-2">
                                     {exp.technologies.map((tech) => (
                                         <span
                                             key={tech}
@@ -225,7 +313,7 @@ export const TextEditorApp: React.FC<TextEditorAppProps> = ({ user }) => {
                                     ))}
                                 </div>
                                 {exp.achievements && exp.achievements.length > 0 && (
-                                    <div className="mt-2 space-y-1">
+                                    <div className="space-y-1">
                                         {exp.achievements.map((a, j) => (
                                             <div
                                                 key={j}
@@ -245,6 +333,48 @@ export const TextEditorApp: React.FC<TextEditorAppProps> = ({ user }) => {
                     </div>
                 </div>
 
+                {/* Certifications */}
+                {CONFIG.certifications && CONFIG.certifications.length > 0 && (
+                    <div className="mb-6">
+                        <h2 className="text-base font-bold mb-3" style={{ color: 'var(--color-text)' }}>
+                            <i className="fas fa-certificate mr-2" style={{ color: 'var(--color-primary)' }} />
+                            Certifications
+                        </h2>
+                        <div className="space-y-2">
+                            {CONFIG.certifications.map((cert, i) => (
+                                <div
+                                    key={i}
+                                    className="flex items-center gap-3 p-3 rounded-sm border"
+                                    style={{ borderColor: 'var(--color-border)' }}
+                                >
+                                    {cert.icon && (
+                                        <i className={`${cert.icon} text-lg`} style={{ color: 'var(--color-primary)' }} />
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>
+                                            {cert.name}
+                                        </div>
+                                        <div className="text-xs" style={{ color: 'var(--color-text-dim)' }}>
+                                            {cert.issuer} · {cert.date}
+                                        </div>
+                                    </div>
+                                    {cert.url && (
+                                        <a
+                                            href={cert.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            style={{ color: 'var(--color-primary)' }}
+                                        >
+                                            <i className="fas fa-external-link-alt text-xs" />
+                                        </a>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Contact */}
                 <div>
                     <h2 className="text-base font-bold mb-3" style={{ color: 'var(--color-text)' }}>
                         <i
@@ -255,26 +385,23 @@ export const TextEditorApp: React.FC<TextEditorAppProps> = ({ user }) => {
                     </h2>
                     <div className="space-y-2 text-xs" style={{ color: 'var(--color-text-dim)' }}>
                         <div className="flex items-center gap-2">
-                            <i
-                                className="fas fa-envelope"
-                                style={{ color: 'var(--color-primary)', width: 16 }}
-                            />
+                            <i className="fas fa-envelope" style={{ color: 'var(--color-primary)', width: 16 }} />
                             {CONFIG.personal.email}
                         </div>
                         <div className="flex items-center gap-2">
-                            <i
-                                className="fab fa-github"
-                                style={{ color: 'var(--color-primary)', width: 16 }}
-                            />
+                            <i className="fab fa-github" style={{ color: 'var(--color-primary)', width: 16 }} />
                             github.com/hambosto
                         </div>
                         <div className="flex items-center gap-2">
-                            <i
-                                className="fab fa-linkedin"
-                                style={{ color: 'var(--color-primary)', width: 16 }}
-                            />
+                            <i className="fab fa-linkedin" style={{ color: 'var(--color-primary)', width: 16 }} />
                             linkedin.com/in/hambosto
                         </div>
+                        {CONFIG.social.blog && (
+                            <div className="flex items-center gap-2">
+                                <i className="fas fa-rss" style={{ color: 'var(--color-primary)', width: 16 }} />
+                                {CONFIG.social.blog}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

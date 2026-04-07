@@ -7,29 +7,17 @@ interface StartMenuProps {
     githubData: GitHubData | null;
 }
 
-const apps = [
-    {
-        id: 'terminal',
-        name: 'Terminal',
-        icon: 'fa-solid fa-terminal',
-        desc: 'Command line interface',
-    },
+const apps: { id: string; name: string; icon: string; desc: string }[] = [
+    { id: 'terminal', name: 'Terminal', icon: 'fa-solid fa-terminal', desc: 'Command line interface' },
     { id: 'files', name: 'File Manager', icon: 'fa-solid fa-folder-open', desc: 'Browse projects' },
     { id: 'editor', name: 'Text Editor', icon: 'fa-solid fa-file-lines', desc: 'About me' },
-    {
-        id: 'monitor',
-        name: 'System Monitor',
-        icon: 'fa-solid fa-chart-bar',
-        desc: 'Skills & technologies',
-    },
-    {
-        id: 'network',
-        name: 'Network Manager',
-        icon: 'fa-solid fa-globe',
-        desc: 'Social connections',
-    },
+    { id: 'monitor', name: 'System Monitor', icon: 'fa-solid fa-chart-bar', desc: 'Skills & technologies' },
+    { id: 'network', name: 'Network Manager', icon: 'fa-solid fa-globe', desc: 'Social connections' },
     { id: 'mail', name: 'Mail Client', icon: 'fa-solid fa-envelope', desc: 'Send a message' },
     { id: 'settings', name: 'Settings', icon: 'fa-solid fa-gear', desc: 'Appearance & themes' },
+    { id: 'tetris', name: 'Tetris', icon: 'fa-solid fa-gamepad', desc: 'Classic block puzzle' },
+    { id: 'snake', name: 'Snake', icon: 'fa-solid fa-worm', desc: 'Retro snake game' },
+    { id: 'flappy', name: 'Flappy Bird', icon: 'fa-solid fa-dove', desc: 'Tap to fly through pipes' },
 ];
 
 export const StartMenu: React.FC<StartMenuProps> = ({ onClose, githubData }) => {

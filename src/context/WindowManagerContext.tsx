@@ -17,7 +17,7 @@ export interface WindowState {
 interface WindowManagerValue {
     windows: WindowState[];
     focusedId: string | null;
-    openWindow: (opts: Omit<WindowState, 'zIndex' | 'minimized' | 'maximized'>) => void;
+    openWindow: (opts: Omit<WindowState, 'zIndex' | 'minimized' | 'maximized'> & { maximized?: boolean }) => void;
     closeWindow: (id: string) => void;
     focusWindow: (id: string) => void;
     minimizeWindow: (id: string) => void;

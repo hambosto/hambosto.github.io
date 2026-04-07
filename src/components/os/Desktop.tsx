@@ -8,6 +8,9 @@ import { SystemMonitorApp } from '../apps/SystemMonitorApp';
 import { NetworkManagerApp } from '../apps/NetworkManagerApp';
 import { MailClientApp } from '../apps/MailClientApp';
 import { SettingsApp } from '../apps/SettingsApp';
+import { TetrisGame } from '../games/TetrisGame';
+import { SnakeGame } from '../games/SnakeGame';
+import { FlappyBirdGame } from '../games/FlappyBirdGame';
 import { DraggableWindow } from './DraggableWindow';
 import { MatrixScreensaver } from './MatrixScreensaver';
 import { Wallpaper } from './Wallpaper';
@@ -24,6 +27,9 @@ const desktopIcons = [
     { id: 'network', name: 'Social', icon: 'fa-solid fa-globe' },
     { id: 'mail', name: 'Contact', icon: 'fa-solid fa-envelope' },
     { id: 'settings', name: 'Settings', icon: 'fa-solid fa-gear' },
+    { id: 'tetris', name: 'Tetris', icon: 'fa-solid fa-gamepad' },
+    { id: 'snake', name: 'Snake', icon: 'fa-solid fa-worm' },
+    { id: 'flappy', name: 'Flappy Bird', icon: 'fa-solid fa-dove' },
 ];
 
 export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
@@ -71,8 +77,7 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
     useEffect(() => {
         if (!initialized) {
             setInitialized(true);
-            setTimeout(() => handleOpen('terminal'), 600);
-            setTimeout(() => handleOpen('editor'), 1000);
+            setTimeout(() => handleOpen('editor'), 600);
         }
     }, [initialized, handleOpen]);
 
@@ -137,8 +142,8 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
                 </div>
             </div>
 
-            {/* 2. Desktop icons — z-index 10 */}
-            <div className="fixed top-4 left-4 flex flex-col gap-1" style={{ zIndex: 10 }}>
+            {/* 2. Desktop icons — z-index 10, hidden on mobile */}
+            <div className="fixed top-4 left-4 flex flex-col gap-1 hidden sm:flex" style={{ zIndex: 10 }}>
                 {desktopIcons.map((icon) => (
                     <div key={icon.id} className="desktop-icon" onClick={() => handleOpen(icon.id)}>
                         <i
@@ -151,6 +156,26 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
                         <span className="desktop-icon-label">{icon.name}</span>
                     </div>
                 ))}
+            </div>
+
+            {/* Mobile app launcher grid */}
+            <div className="fixed inset-0 flex items-center justify-center sm:hidden p-4" style={{ zIndex: 5, bottom: '40px' }}>
+                <div className="grid grid-cols-3 gap-4 w-full max-w-sm">
+                    {desktopIcons.map((icon) => (
+                        <div
+                            key={icon.id}
+                            className="flex flex-col items-center gap-2 p-3 rounded-lg cursor-pointer active:scale-95 transition-transform"
+                            style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid var(--color-border)' }}
+                            onClick={() => handleOpen(icon.id)}
+                        >
+                            <i
+                                className={`${icon.icon} text-2xl`}
+                                style={{ color: 'var(--color-primary)' }}
+                            />
+                            <span className="text-[10px] text-center" style={{ color: 'var(--color-text-dim)' }}>{icon.name}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* 3. Windows — z-index 100+, rendered at root level */}
@@ -176,6 +201,9 @@ const WindowRenderer: React.FC<{ githubData: GitHubData | null }> = ({ githubDat
                     {win.id === 'network' && <NetworkManagerApp />}
                     {win.id === 'mail' && <MailClientApp />}
                     {win.id === 'settings' && <SettingsApp />}
+                    {win.id === 'tetris' && <TetrisGame />}
+                    {win.id === 'snake' && <SnakeGame />}
+                    {win.id === 'flappy' && <FlappyBirdGame />}
                 </DraggableWindow>
             ))}
         </>
