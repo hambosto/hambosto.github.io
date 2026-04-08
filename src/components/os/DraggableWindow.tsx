@@ -26,10 +26,7 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
         updatePosition,
         updateSize,
     } = useWindowManager();
-    const win = windows.find((w) => w.id === windowId);
-    if (!win) return null;
 
-    const isFocused = focusedId === windowId;
     const dragRef = useRef<HTMLDivElement>(null);
     const dragState = useRef({
         dragging: false,
@@ -42,33 +39,35 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
         startH: 0,
     });
 
+    const win = windows.find((w) => w.id === windowId);
+
     const handleMouseDown = useCallback(
         (e: React.MouseEvent) => {
-            if (win.maximized) return;
+            if (win?.maximized) return;
             focusWindow(windowId);
             dragState.current.dragging = true;
             dragState.current.startX = e.clientX;
             dragState.current.startY = e.clientY;
-            dragState.current.startWinX = win.x;
-            dragState.current.startWinY = win.y;
+            dragState.current.startWinX = win?.x ?? 0;
+            dragState.current.startWinY = win?.y ?? 0;
             e.preventDefault();
         },
-        [windowId, focusWindow, win.x, win.y, win.maximized]
+        [windowId, focusWindow, win?.x, win?.y, win?.maximized]
     );
 
     const handleResizeMouseDown = useCallback(
         (e: React.MouseEvent) => {
-            if (win.maximized) return;
+            if (win?.maximized) return;
             focusWindow(windowId);
             dragState.current.resizing = true;
             dragState.current.startX = e.clientX;
             dragState.current.startY = e.clientY;
-            dragState.current.startW = win.width;
-            dragState.current.startH = win.height;
+            dragState.current.startW = win?.width ?? 0;
+            dragState.current.startH = win?.height ?? 0;
             e.preventDefault();
             e.stopPropagation();
         },
-        [windowId, focusWindow, win.width, win.height, win.maximized]
+        [windowId, focusWindow, win?.width, win?.height, win?.maximized]
     );
 
     useEffect(() => {
@@ -89,13 +88,18 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
             dragState.current.dragging = false;
             dragState.current.resizing = false;
         };
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseup', handleMouseUp);
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
         };
     }, [windowId, updatePosition, updateSize]);
+
+    if (!win) return null;
+
+    const isFocused = focusedId === windowId;
 
     const style: React.CSSProperties = win.maximized
         ? {
@@ -105,8 +109,8 @@ export const DraggableWindow: React.FC<DraggableWindowProps> = ({
               width: '100%',
               height: '100%',
               zIndex: win.zIndex,
-               backgroundColor: 'var(--color-bg)',
-           }
+              backgroundColor: 'var(--color-bg)',
+          }
         : {
               position: 'absolute',
               left: win.x,

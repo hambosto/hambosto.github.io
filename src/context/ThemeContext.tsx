@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 
 export interface Theme {
@@ -194,6 +195,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     // Apply default theme on mount
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setTheme('green');
     }, [setTheme]);
 

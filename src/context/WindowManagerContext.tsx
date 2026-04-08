@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 
 export interface WindowState {
@@ -17,7 +18,9 @@ export interface WindowState {
 interface WindowManagerValue {
     windows: WindowState[];
     focusedId: string | null;
-    openWindow: (opts: Omit<WindowState, 'zIndex' | 'minimized' | 'maximized'> & { maximized?: boolean }) => void;
+    openWindow: (
+        opts: Omit<WindowState, 'zIndex' | 'minimized' | 'maximized'> & { maximized?: boolean }
+    ) => void;
     closeWindow: (id: string) => void;
     focusWindow: (id: string) => void;
     minimizeWindow: (id: string) => void;

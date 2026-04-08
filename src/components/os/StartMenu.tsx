@@ -1,6 +1,7 @@
 import { useWindowManager } from '../../context/WindowManagerContext';
 import type { GitHubData } from '../../types/github';
 import { CONFIG } from '../../utils/config';
+import { useRef, useCallback } from 'react';
 
 interface StartMenuProps {
     onClose: () => void;
@@ -8,36 +9,46 @@ interface StartMenuProps {
 }
 
 const apps: { id: string; name: string; icon: string; desc: string }[] = [
-    { id: 'terminal', name: 'Terminal', icon: 'fa-solid fa-terminal', desc: 'Command line interface' },
+    {
+        id: 'terminal',
+        name: 'Terminal',
+        icon: 'fa-solid fa-terminal',
+        desc: 'Command line interface',
+    },
     { id: 'files', name: 'File Manager', icon: 'fa-solid fa-folder-open', desc: 'Browse projects' },
-    { id: 'editor', name: 'Text Editor', icon: 'fa-solid fa-file-lines', desc: 'About me' },
-    { id: 'monitor', name: 'System Monitor', icon: 'fa-solid fa-chart-bar', desc: 'Skills & technologies' },
-    { id: 'network', name: 'Network Manager', icon: 'fa-solid fa-globe', desc: 'Social connections' },
+    { id: 'editor', name: 'About Me', icon: 'fa-solid fa-file-lines', desc: 'About me & skills' },
+    { id: 'calculator', name: 'Calculator', icon: 'fa-solid fa-calculator', desc: 'Do some math' },
     { id: 'mail', name: 'Mail Client', icon: 'fa-solid fa-envelope', desc: 'Send a message' },
     { id: 'settings', name: 'Settings', icon: 'fa-solid fa-gear', desc: 'Appearance & themes' },
     { id: 'tetris', name: 'Tetris', icon: 'fa-solid fa-gamepad', desc: 'Classic block puzzle' },
     { id: 'snake', name: 'Snake', icon: 'fa-solid fa-worm', desc: 'Retro snake game' },
-    { id: 'flappy', name: 'Flappy Bird', icon: 'fa-solid fa-dove', desc: 'Tap to fly through pipes' },
+    { id: 'flappy', name: 'Flappy Bird', icon: 'fa-solid fa-dove', desc: 'Tap to fly' },
 ];
 
 export const StartMenu: React.FC<StartMenuProps> = ({ onClose, githubData }) => {
     const { openWindow } = useWindowManager();
     const user = githubData?.user;
+    const offsetRef = useRef({ x: 0, y: 0 });
 
-    const handleOpen = (appId: string) => {
-        const app = apps.find((a) => a.id === appId);
-        if (!app) return;
-        openWindow({
-            id: appId,
-            title: app.name,
-            icon: app.icon,
-            x: 80 + Math.random() * 200,
-            y: 40 + Math.random() * 100,
-            width: appId === 'terminal' ? 700 : appId === 'files' ? 800 : 600,
-            height: appId === 'terminal' ? 450 : 500,
-        });
-        onClose();
-    };
+    const handleOpen = useCallback(
+        (appId: string) => {
+            const app = apps.find((a) => a.id === appId);
+            if (!app) return;
+            offsetRef.current.x += 30;
+            offsetRef.current.y += 20;
+            openWindow({
+                id: appId,
+                title: app.name,
+                icon: app.icon,
+                x: 80 + (offsetRef.current.x % 200),
+                y: 40 + (offsetRef.current.y % 150),
+                width: appId === 'terminal' ? 700 : appId === 'files' ? 800 : 600,
+                height: appId === 'terminal' ? 450 : 500,
+            });
+            onClose();
+        },
+        [openWindow, onClose]
+    );
 
     return (
         <div
@@ -68,7 +79,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ onClose, githubData }) => 
                     <div
                         className="w-10 h-10 rounded-sm flex items-center justify-center text-lg"
                         style={{
-                backgroundColor: 'var(--color-bg)',
+                            backgroundColor: 'var(--color-bg)',
                             border: '2px solid var(--color-border-active)',
                         }}
                     >

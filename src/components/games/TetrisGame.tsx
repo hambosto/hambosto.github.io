@@ -5,22 +5,43 @@ const ROWS = 20;
 const CELL = 22;
 const SHAPES = [
     [[1, 1, 1, 1]],
-    [[1, 1], [1, 1]],
-    [[0, 1, 0], [1, 1, 1]],
-    [[1, 0, 0], [1, 1, 1]],
-    [[0, 0, 1], [1, 1, 1]],
-    [[1, 1, 0], [0, 1, 1]],
-    [[0, 1, 1], [1, 1, 0]],
+    [
+        [1, 1],
+        [1, 1],
+    ],
+    [
+        [0, 1, 0],
+        [1, 1, 1],
+    ],
+    [
+        [1, 0, 0],
+        [1, 1, 1],
+    ],
+    [
+        [0, 0, 1],
+        [1, 1, 1],
+    ],
+    [
+        [1, 1, 0],
+        [0, 1, 1],
+    ],
+    [
+        [0, 1, 1],
+        [1, 1, 0],
+    ],
 ];
 const COLORS = ['#00f0f0', '#f0f000', '#a000f0', '#0000f0', '#f0a000', '#00f000', '#f00000'];
 
 type Difficulty = 'easy' | 'normal' | 'hard' | 'insane';
 
-const DIFFICULTY_CONFIG: Record<Difficulty, { baseSpeed: number; speedStep: number; label: string; color: string }> = {
-    easy:   { baseSpeed: 1000, speedStep: 50,  label: 'EASY',   color: '#00ff41' },
-    normal: { baseSpeed: 800,  speedStep: 70,  label: 'NORMAL', color: '#ffb000' },
-    hard:   { baseSpeed: 500,  speedStep: 100, label: 'HARD',   color: '#ff6600' },
-    insane: { baseSpeed: 250,  speedStep: 130, label: 'INSANE', color: '#ff0040' },
+const DIFFICULTY_CONFIG: Record<
+    Difficulty,
+    { baseSpeed: number; speedStep: number; label: string; color: string }
+> = {
+    easy: { baseSpeed: 1000, speedStep: 50, label: 'EASY', color: '#00ff41' },
+    normal: { baseSpeed: 800, speedStep: 70, label: 'NORMAL', color: '#ffb000' },
+    hard: { baseSpeed: 500, speedStep: 100, label: 'HARD', color: '#ff6600' },
+    insane: { baseSpeed: 250, speedStep: 130, label: 'INSANE', color: '#ff0040' },
 };
 
 type Board = (string | null)[][];
@@ -36,16 +57,23 @@ const emptyBoard = (): Board => Array.from({ length: ROWS }, () => Array(COLS).f
 
 const randomPiece = (): Piece => {
     const i = Math.floor(Math.random() * SHAPES.length);
-    return { shape: SHAPES[i].map(r => [...r]), color: COLORS[i], x: Math.floor(COLS / 2) - 1, y: 0 };
+    return {
+        shape: SHAPES[i].map((r) => [...r]),
+        color: COLORS[i],
+        x: Math.floor(COLS / 2) - 1,
+        y: 0,
+    };
 };
 
-const rotateShape = (shape: number[][]): number[][] => shape[0].map((_, i) => shape.map(row => row[i]).reverse());
+const rotateShape = (shape: number[][]): number[][] =>
+    shape[0].map((_, i) => shape.map((row) => row[i]).reverse());
 
 const isValid = (board: Board, shape: number[][], x: number, y: number): boolean =>
     shape.every((row, dy) =>
         row.every((cell, dx) => {
             if (!cell) return true;
-            const nx = x + dx, ny = y + dy;
+            const nx = x + dx,
+                ny = y + dy;
             return nx >= 0 && nx < COLS && ny < ROWS && (ny < 0 || !board[ny][nx]);
         })
     );
@@ -62,23 +90,49 @@ export const TetrisGame: React.FC = () => {
     const [started, setStarted] = useState(false);
     const [difficulty, setDifficulty] = useState<Difficulty>('normal');
 
-    const stateRef = useRef({ board, piece, next, score, level, totalLines, gameOver, paused, started, difficulty });
-    stateRef.current = { board, piece, next, score, level, totalLines, gameOver, paused, started, difficulty };
+    const stateRef = useRef({
+        board,
+        piece,
+        next,
+        score,
+        level,
+        totalLines,
+        gameOver,
+        paused,
+        started,
+        difficulty,
+    });
+    stateRef.current = {
+        board,
+        piece,
+        next,
+        score,
+        level,
+        totalLines,
+        gameOver,
+        paused,
+        started,
+        difficulty,
+    };
 
     const diff = DIFFICULTY_CONFIG[difficulty];
 
     const lockPiece = useCallback(() => {
         const s = stateRef.current;
-        const b = s.board.map(r => [...r]);
+        const b = s.board.map((r) => [...r]);
         const { shape, color, x, y } = s.piece;
-        shape.forEach((row, dy) => row.forEach((cell, dx) => {
-            if (cell && y + dy >= 0 && y + dy < ROWS && x + dx >= 0 && x + dx < COLS) {
-                b[y + dy][x + dx] = color;
-            }
-        }));
+        shape.forEach((row, dy) =>
+            row.forEach((cell, dx) => {
+                if (cell && y + dy >= 0 && y + dy < ROWS && x + dx >= 0 && x + dx < COLS) {
+                    b[y + dy][x + dx] = color;
+                }
+            })
+        );
         const fullRows: number[] = [];
-        b.forEach((row, i) => { if (row.every(c => c !== null)) fullRows.push(i); });
-        fullRows.forEach(i => b.splice(i, 1));
+        b.forEach((row, i) => {
+            if (row.every((c) => c !== null)) fullRows.push(i);
+        });
+        fullRows.forEach((i) => b.splice(i, 1));
         while (b.length < ROWS) b.unshift(Array(COLS).fill(null));
         const cleared = fullRows.length;
         const newLines = s.totalLines + cleared;
@@ -136,7 +190,7 @@ export const TetrisGame: React.FC = () => {
         const p = s.piece;
         let dy = 0;
         while (isValid(s.board, p.shape, p.x, p.y + dy + 1)) dy++;
-        setScore(sc => sc + dy * 2);
+        setScore((sc) => sc + dy * 2);
         setPiece({ ...p, y: p.y + dy });
         setTimeout(() => lockPiece(), 0);
     }, [lockPiece]);
@@ -166,30 +220,64 @@ export const TetrisGame: React.FC = () => {
             const s = stateRef.current;
             if (!s.started) return;
             switch (e.key) {
-                case 'ArrowLeft': e.preventDefault(); moveLeft(); break;
-                case 'ArrowRight': e.preventDefault(); moveRight(); break;
-                case 'ArrowDown': e.preventDefault(); moveDown(); break;
-                case 'ArrowUp': e.preventDefault(); rotatePiece(); break;
-                case ' ': e.preventDefault(); hardDrop(); break;
-                case 'p': case 'P': setPaused(p => !p); break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    moveLeft();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    moveRight();
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    moveDown();
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    rotatePiece();
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    hardDrop();
+                    break;
+                case 'p':
+                case 'P':
+                    setPaused((p) => !p);
+                    break;
             }
         };
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
     }, [moveLeft, moveRight, moveDown, rotatePiece, hardDrop]);
 
-    const display = board.map(r => [...r]);
-    piece.shape.forEach((row, dy) => row.forEach((cell, dx) => {
-        if (cell && piece.y + dy >= 0 && piece.y + dy < ROWS && piece.x + dx >= 0 && piece.x + dx < COLS) {
-            display[piece.y + dy][piece.x + dx] = piece.color;
-        }
-    }));
+    const display = board.map((r) => [...r]);
+    piece.shape.forEach((row, dy) =>
+        row.forEach((cell, dx) => {
+            if (
+                cell &&
+                piece.y + dy >= 0 &&
+                piece.y + dy < ROWS &&
+                piece.x + dx >= 0 &&
+                piece.x + dx < COLS
+            ) {
+                display[piece.y + dy][piece.x + dx] = piece.color;
+            }
+        })
+    );
 
-    const btnClass = "flex items-center justify-center w-12 h-10 sm:w-14 sm:h-12 rounded-sm border text-lg font-bold active:scale-95 select-none";
-    const btnStyle = { borderColor: 'var(--color-primary)', color: 'var(--color-primary)', backgroundColor: 'var(--color-primary-glow)' };
+    const btnClass =
+        'flex items-center justify-center w-12 h-10 sm:w-14 sm:h-12 rounded-sm border text-lg font-bold active:scale-95 select-none';
+    const btnStyle = {
+        borderColor: 'var(--color-primary)',
+        color: 'var(--color-primary)',
+        backgroundColor: 'var(--color-primary-glow)',
+    };
 
     return (
-        <div className="h-full flex flex-col items-center justify-center p-2 sm:p-4" style={{ backgroundColor: 'var(--color-bg)' }}>
+        <div
+            className="h-full flex flex-col items-center justify-center p-2 sm:p-4"
+            style={{ backgroundColor: 'var(--color-bg)' }}
+        >
             <div className="text-sm font-bold mb-2 sm:mb-3" style={{ color: 'var(--color-text)' }}>
                 <i className="fas fa-gamepad mr-2" style={{ color: 'var(--color-primary)' }} />
                 TETRIS
@@ -197,16 +285,29 @@ export const TetrisGame: React.FC = () => {
 
             {/* Difficulty selector */}
             <div className="flex gap-1.5 mb-3">
-                {(Object.keys(DIFFICULTY_CONFIG) as Difficulty[]).map(d => (
+                {(Object.keys(DIFFICULTY_CONFIG) as Difficulty[]).map((d) => (
                     <button
                         key={d}
                         className="px-3 py-1 text-[10px] font-bold rounded-sm border transition-all"
                         style={{
-                            borderColor: difficulty === d ? DIFFICULTY_CONFIG[d].color : 'var(--color-border)',
-                            color: difficulty === d ? DIFFICULTY_CONFIG[d].color : 'var(--color-text-muted)',
-                            backgroundColor: difficulty === d ? `${DIFFICULTY_CONFIG[d].color}22` : 'transparent',
+                            borderColor:
+                                difficulty === d
+                                    ? DIFFICULTY_CONFIG[d].color
+                                    : 'var(--color-border)',
+                            color:
+                                difficulty === d
+                                    ? DIFFICULTY_CONFIG[d].color
+                                    : 'var(--color-text-muted)',
+                            backgroundColor:
+                                difficulty === d
+                                    ? `${DIFFICULTY_CONFIG[d].color}22`
+                                    : 'transparent',
                         }}
-                        onClick={() => { setDifficulty(d); setStarted(false); setGameOver(false); }}
+                        onClick={() => {
+                            setDifficulty(d);
+                            setStarted(false);
+                            setGameOver(false);
+                        }}
                     >
                         {DIFFICULTY_CONFIG[d].label}
                     </button>
@@ -215,30 +316,68 @@ export const TetrisGame: React.FC = () => {
 
             <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 items-center">
                 <div className="flex flex-col items-center gap-2">
-                    <div className="relative border-2" style={{ borderColor: 'var(--color-border)' }}>
+                    <div
+                        className="relative border-2"
+                        style={{ borderColor: 'var(--color-border)' }}
+                    >
                         {display.map((row, y) => (
                             <div key={y} className="flex">
                                 {row.map((cell, x) => (
-                                    <div key={x} style={{
-                                        width: CELL, height: CELL,
-                                        backgroundColor: cell || '#111',
-                                        border: cell ? '1px solid rgba(255,255,255,0.2)' : '1px solid #1a1a1a',
-                                        boxShadow: cell ? `inset 0 0 4px ${cell}` : 'none',
-                                    }} />
+                                    <div
+                                        key={x}
+                                        style={{
+                                            width: CELL,
+                                            height: CELL,
+                                            backgroundColor: cell || '#111',
+                                            border: cell
+                                                ? '1px solid rgba(255,255,255,0.2)'
+                                                : '1px solid #1a1a1a',
+                                            boxShadow: cell ? `inset 0 0 4px ${cell}` : 'none',
+                                        }}
+                                    />
                                 ))}
                             </div>
                         ))}
                         {(gameOver || paused || !started) && (
-                            <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}>
+                            <div
+                                className="absolute inset-0 flex items-center justify-center"
+                                style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}
+                            >
                                 <div className="text-center">
-                                    <div className="text-lg font-bold mb-1" style={{ color: diff.color }}>
+                                    <div
+                                        className="text-lg font-bold mb-1"
+                                        style={{ color: diff.color }}
+                                    >
                                         {gameOver ? 'GAME OVER' : paused ? 'PAUSED' : 'TETRIS'}
                                     </div>
-                                    <div className="text-[10px] mb-2" style={{ color: diff.color }}>{diff.label} MODE</div>
-                                    {!started && <div className="text-xs mb-3" style={{ color: 'var(--color-text-dim)' }}>Press Start to play</div>}
-                                    {gameOver && <div className="text-xs mb-3" style={{ color: 'var(--color-text-dim)' }}>Score: {score}</div>}
-                                    <button onClick={start} className="px-4 py-2 text-xs font-bold rounded-sm border"
-                                        style={{ borderColor: diff.color, color: diff.color, backgroundColor: `${diff.color}22` }}>
+                                    <div className="text-[10px] mb-2" style={{ color: diff.color }}>
+                                        {diff.label} MODE
+                                    </div>
+                                    {!started && (
+                                        <div
+                                            className="text-xs mb-3"
+                                            style={{ color: 'var(--color-text-dim)' }}
+                                        >
+                                            Press Start to play
+                                        </div>
+                                    )}
+                                    {gameOver && (
+                                        <div
+                                            className="text-xs mb-3"
+                                            style={{ color: 'var(--color-text-dim)' }}
+                                        >
+                                            Score: {score}
+                                        </div>
+                                    )}
+                                    <button
+                                        onClick={start}
+                                        className="px-4 py-2 text-xs font-bold rounded-sm border"
+                                        style={{
+                                            borderColor: diff.color,
+                                            color: diff.color,
+                                            backgroundColor: `${diff.color}22`,
+                                        }}
+                                    >
                                         {gameOver || !started ? 'START' : 'RESUME'}
                                     </button>
                                 </div>
@@ -246,35 +385,79 @@ export const TetrisGame: React.FC = () => {
                         )}
                     </div>
                     <div className="lg:hidden flex gap-3">
-                        {[['Score', score], ['Level', level], ['Lines', totalLines]].map(([label, val]) => (
-                            <div key={label as string} className="p-2 rounded-sm border text-center min-w-[60px]" style={{ borderColor: 'var(--color-border)' }}>
-                                <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{label}</div>
-                                <div className="text-sm font-bold" style={{ color: 'var(--color-primary)' }}>{val}</div>
+                        {[
+                            ['Score', score],
+                            ['Level', level],
+                            ['Lines', totalLines],
+                        ].map(([label, val]) => (
+                            <div
+                                key={label as string}
+                                className="p-2 rounded-sm border text-center min-w-[60px]"
+                                style={{ borderColor: 'var(--color-border)' }}
+                            >
+                                <div
+                                    className="text-xs"
+                                    style={{ color: 'var(--color-text-muted)' }}
+                                >
+                                    {label}
+                                </div>
+                                <div
+                                    className="text-sm font-bold"
+                                    style={{ color: 'var(--color-primary)' }}
+                                >
+                                    {val}
+                                </div>
                             </div>
                         ))}
                     </div>
                 </div>
                 <div className="hidden lg:block space-y-3">
-                    <div className="p-3 rounded-sm border" style={{ borderColor: 'var(--color-border)' }}>
-                        <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>NEXT</div>
+                    <div
+                        className="p-3 rounded-sm border"
+                        style={{ borderColor: 'var(--color-border)' }}
+                    >
+                        <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>
+                            NEXT
+                        </div>
                         <div className="flex flex-col items-center">
                             {next.shape.map((row, y) => (
                                 <div key={y} className="flex">
                                     {row.map((cell, x) => (
-                                        <div key={x} style={{
-                                            width: 14, height: 14,
-                                            backgroundColor: cell ? next.color : 'transparent',
-                                            border: cell ? '1px solid rgba(255,255,255,0.2)' : 'none',
-                                        }} />
+                                        <div
+                                            key={x}
+                                            style={{
+                                                width: 14,
+                                                height: 14,
+                                                backgroundColor: cell ? next.color : 'transparent',
+                                                border: cell
+                                                    ? '1px solid rgba(255,255,255,0.2)'
+                                                    : 'none',
+                                            }}
+                                        />
                                     ))}
                                 </div>
                             ))}
                         </div>
                     </div>
-                    {[['Score', score], ['Level', level], ['Lines', totalLines]].map(([label, val]) => (
-                        <div key={label as string} className="p-2 rounded-sm border" style={{ borderColor: 'var(--color-border)' }}>
-                            <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{label}</div>
-                            <div className="text-lg font-bold" style={{ color: 'var(--color-primary)' }}>{val}</div>
+                    {[
+                        ['Score', score],
+                        ['Level', level],
+                        ['Lines', totalLines],
+                    ].map(([label, val]) => (
+                        <div
+                            key={label as string}
+                            className="p-2 rounded-sm border"
+                            style={{ borderColor: 'var(--color-border)' }}
+                        >
+                            <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                                {label}
+                            </div>
+                            <div
+                                className="text-lg font-bold"
+                                style={{ color: 'var(--color-primary)' }}
+                            >
+                                {val}
+                            </div>
                         </div>
                     ))}
                     <div className="text-xs space-y-1" style={{ color: 'var(--color-text-muted)' }}>

@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type KeyboardEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 
 interface LoginScreenProps {
     onLogin: () => void;
@@ -20,8 +20,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, avatarUrl }) 
         }
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Enter') handleSubmit(e as any);
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSubmit(e as unknown as React.FormEvent);
+        }
     };
 
     return (

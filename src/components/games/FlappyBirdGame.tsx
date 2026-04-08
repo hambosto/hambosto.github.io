@@ -7,11 +7,14 @@ const PIPE_WIDTH = 40;
 
 type Difficulty = 'easy' | 'normal' | 'hard' | 'insane';
 
-const DIFFICULTY_CONFIG: Record<Difficulty, { pipeGap: number; pipeSpeed: number; gravity: number; label: string; color: string }> = {
-    easy:   { pipeGap: 160, pipeSpeed: 2.0, gravity: 0.35, label: 'EASY',   color: '#00ff41' },
-    normal: { pipeGap: 120, pipeSpeed: 2.5, gravity: 0.40, label: 'NORMAL', color: '#ffb000' },
-    hard:   { pipeGap: 90,  pipeSpeed: 3.2, gravity: 0.45, label: 'HARD',   color: '#ff6600' },
-    insane: { pipeGap: 65,  pipeSpeed: 4.0, gravity: 0.55, label: 'INSANE', color: '#ff0040' },
+const DIFFICULTY_CONFIG: Record<
+    Difficulty,
+    { pipeGap: number; pipeSpeed: number; gravity: number; label: string; color: string }
+> = {
+    easy: { pipeGap: 160, pipeSpeed: 2.0, gravity: 0.35, label: 'EASY', color: '#00ff41' },
+    normal: { pipeGap: 120, pipeSpeed: 2.5, gravity: 0.4, label: 'NORMAL', color: '#ffb000' },
+    hard: { pipeGap: 90, pipeSpeed: 3.2, gravity: 0.45, label: 'HARD', color: '#ff6600' },
+    insane: { pipeGap: 65, pipeSpeed: 4.0, gravity: 0.55, label: 'INSANE', color: '#ff0040' },
 };
 
 interface Pipe {
@@ -97,10 +100,16 @@ export const FlappyBirdGame: React.FC = () => {
             ctx.strokeStyle = 'rgba(0, 255, 65, 0.05)';
             ctx.lineWidth = 1;
             for (let x = 0; x < WIDTH; x += 20) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, HEIGHT);
+                ctx.stroke();
             }
             for (let y = 0; y < HEIGHT; y += 20) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WIDTH, y); ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(WIDTH, y);
+                ctx.stroke();
             }
 
             if (!s.started && !s.gameOver) {
@@ -128,7 +137,7 @@ export const FlappyBirdGame: React.FC = () => {
                 for (const pipe of s.pipes) {
                     pipe.x -= cfg.pipeSpeed;
                 }
-                s.pipes = s.pipes.filter(p => p.x > -PIPE_WIDTH);
+                s.pipes = s.pipes.filter((p) => p.x > -PIPE_WIDTH);
 
                 const birdLeft = WIDTH / 3;
                 const birdRight = birdLeft + BIRD_SIZE;
@@ -137,14 +146,14 @@ export const FlappyBirdGame: React.FC = () => {
 
                 if (birdBottom > HEIGHT || birdTop < 0) {
                     s.gameOver = true;
-                    setBestScore(b => Math.max(b, s.score));
+                    setBestScore((b) => Math.max(b, s.score));
                 }
 
                 for (const pipe of s.pipes) {
                     if (birdRight > pipe.x && birdLeft < pipe.x + PIPE_WIDTH) {
                         if (birdTop < pipe.topHeight || birdBottom > pipe.topHeight + cfg.pipeGap) {
                             s.gameOver = true;
-                            setBestScore(b => Math.max(b, s.score));
+                            setBestScore((b) => Math.max(b, s.score));
                         }
                     }
                     if (!pipe.scored && pipe.x + PIPE_WIDTH < birdLeft) {
@@ -155,8 +164,14 @@ export const FlappyBirdGame: React.FC = () => {
                 }
             }
 
-            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#00ff41';
-            const primaryDark = getComputedStyle(document.documentElement).getPropertyValue('--color-primary-dark').trim() || '#00801f';
+            const primaryColor =
+                getComputedStyle(document.documentElement)
+                    .getPropertyValue('--color-primary')
+                    .trim() || '#00ff41';
+            const primaryDark =
+                getComputedStyle(document.documentElement)
+                    .getPropertyValue('--color-primary-dark')
+                    .trim() || '#00801f';
 
             for (const pipe of s.pipes) {
                 ctx.fillStyle = primaryDark;
@@ -209,7 +224,10 @@ export const FlappyBirdGame: React.FC = () => {
     }, []);
 
     return (
-        <div className="h-full flex flex-col items-center justify-center p-2 sm:p-4" style={{ backgroundColor: 'var(--color-bg)' }}>
+        <div
+            className="h-full flex flex-col items-center justify-center p-2 sm:p-4"
+            style={{ backgroundColor: 'var(--color-bg)' }}
+        >
             <div className="text-sm font-bold mb-2 sm:mb-3" style={{ color: 'var(--color-text)' }}>
                 <i className="fas fa-dove mr-2" style={{ color: 'var(--color-primary)' }} />
                 FLAPPY BIRD
@@ -217,16 +235,28 @@ export const FlappyBirdGame: React.FC = () => {
 
             {/* Difficulty selector */}
             <div className="flex gap-1.5 mb-3">
-                {(Object.keys(DIFFICULTY_CONFIG) as Difficulty[]).map(d => (
+                {(Object.keys(DIFFICULTY_CONFIG) as Difficulty[]).map((d) => (
                     <button
                         key={d}
                         className="px-3 py-1 text-[10px] font-bold rounded-sm border transition-all"
                         style={{
-                            borderColor: difficulty === d ? DIFFICULTY_CONFIG[d].color : 'var(--color-border)',
-                            color: difficulty === d ? DIFFICULTY_CONFIG[d].color : 'var(--color-text-muted)',
-                            backgroundColor: difficulty === d ? `${DIFFICULTY_CONFIG[d].color}22` : 'transparent',
+                            borderColor:
+                                difficulty === d
+                                    ? DIFFICULTY_CONFIG[d].color
+                                    : 'var(--color-border)',
+                            color:
+                                difficulty === d
+                                    ? DIFFICULTY_CONFIG[d].color
+                                    : 'var(--color-text-muted)',
+                            backgroundColor:
+                                difficulty === d
+                                    ? `${DIFFICULTY_CONFIG[d].color}22`
+                                    : 'transparent',
                         }}
-                        onClick={() => { setDifficulty(d); setScore(0); }}
+                        onClick={() => {
+                            setDifficulty(d);
+                            setScore(0);
+                        }}
                     >
                         {DIFFICULTY_CONFIG[d].label}
                     </button>
@@ -241,20 +271,47 @@ export const FlappyBirdGame: React.FC = () => {
                     className="border-2 cursor-pointer max-w-full"
                     style={{ borderColor: 'var(--color-border)', maxHeight: 'calc(100vh - 200px)' }}
                     onClick={jump}
-                    onTouchStart={(e) => { e.preventDefault(); jump(); }}
+                    onTouchStart={(e) => {
+                        e.preventDefault();
+                        jump();
+                    }}
                 />
                 <div className="flex flex-row sm:flex-col gap-2 sm:gap-3 sm:space-y-3">
-                    <button onClick={reset} className="px-4 py-2 text-xs font-bold rounded-sm border"
-                        style={{ borderColor: diff.color, color: diff.color, backgroundColor: `${diff.color}22` }}>
+                    <button
+                        onClick={reset}
+                        className="px-4 py-2 text-xs font-bold rounded-sm border"
+                        style={{
+                            borderColor: diff.color,
+                            color: diff.color,
+                            backgroundColor: `${diff.color}22`,
+                        }}
+                    >
                         NEW GAME
                     </button>
-                    {[['Score', score], ['Best', bestScore]].map(([label, val]) => (
-                        <div key={label as string} className="p-2 rounded-sm border text-center min-w-[70px]" style={{ borderColor: 'var(--color-border)' }}>
-                            <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{label}</div>
-                            <div className="text-lg font-bold" style={{ color: 'var(--color-primary)' }}>{val}</div>
+                    {[
+                        ['Score', score],
+                        ['Best', bestScore],
+                    ].map(([label, val]) => (
+                        <div
+                            key={label as string}
+                            className="p-2 rounded-sm border text-center min-w-[70px]"
+                            style={{ borderColor: 'var(--color-border)' }}
+                        >
+                            <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                                {label}
+                            </div>
+                            <div
+                                className="text-lg font-bold"
+                                style={{ color: 'var(--color-primary)' }}
+                            >
+                                {val}
+                            </div>
                         </div>
                     ))}
-                    <div className="hidden sm:block text-xs space-y-1" style={{ color: 'var(--color-text-muted)' }}>
+                    <div
+                        className="hidden sm:block text-xs space-y-1"
+                        style={{ color: 'var(--color-text-muted)' }}
+                    >
                         <div>Space / Tap / ↑</div>
                         <div>to flap</div>
                     </div>

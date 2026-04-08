@@ -1,13 +1,12 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useWindowManager } from '../../context/WindowManagerContext';
 import type { GitHubData } from '../../types/github';
 import { TerminalApp } from '../apps/TerminalApp';
 import { FileManagerApp } from '../apps/FileManagerApp';
 import { TextEditorApp } from '../apps/TextEditorApp';
-import { SystemMonitorApp } from '../apps/SystemMonitorApp';
-import { NetworkManagerApp } from '../apps/NetworkManagerApp';
 import { MailClientApp } from '../apps/MailClientApp';
 import { SettingsApp } from '../apps/SettingsApp';
+import { CalculatorApp } from '../apps/CalculatorApp';
 import { TetrisGame } from '../games/TetrisGame';
 import { SnakeGame } from '../games/SnakeGame';
 import { FlappyBirdGame } from '../games/FlappyBirdGame';
@@ -27,8 +26,7 @@ const desktopIcons = [
     { id: 'terminal', name: 'Terminal', icon: 'fa-solid fa-terminal' },
     { id: 'files', name: 'Projects', icon: 'fa-solid fa-folder-open' },
     { id: 'editor', name: 'About Me', icon: 'fa-solid fa-file-lines' },
-    { id: 'monitor', name: 'Skills', icon: 'fa-solid fa-chart-bar' },
-    { id: 'network', name: 'Social', icon: 'fa-solid fa-globe' },
+    { id: 'calculator', name: 'Calculator', icon: 'fa-solid fa-calculator' },
     { id: 'mail', name: 'Contact', icon: 'fa-solid fa-envelope' },
     { id: 'settings', name: 'Settings', icon: 'fa-solid fa-gear' },
     { id: 'tetris', name: 'Tetris', icon: 'fa-solid fa-gamepad' },
@@ -36,19 +34,30 @@ const desktopIcons = [
     { id: 'flappy', name: 'Flappy Bird', icon: 'fa-solid fa-dove' },
 ];
 
-const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+const KONAMI_CODE = [
+    'ArrowUp',
+    'ArrowUp',
+    'ArrowDown',
+    'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'ArrowLeft',
+    'ArrowRight',
+    'b',
+    'a',
+];
 
 export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
-    const { openWindow, focusWindow, windows, maximizeWindow, minimizeWindow, closeWindow } = useWindowManager();
+    const { openWindow, focusWindow, windows, maximizeWindow, minimizeWindow, closeWindow } =
+        useWindowManager();
     const [initialized, setInitialized] = useState(false);
-    const [lastActivity, setLastActivity] = useState(Date.now());
     const [showScreensaver, setShowScreensaver] = useState(false);
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
     const [showClock, setShowClock] = useState(true);
     const [konamiIndex, setKonamiIndex] = useState(0);
     const [matrixMode, setMatrixMode] = useState(false);
-    const [uptime] = useState(Date.now());
-    const SCREENSAVER_TIMEOUT = 5 * 60 * 1000;
+    const [uptime] = useState(() => Date.now());
+    const SCREENSAVER_TIMEOUT = useMemo(() => 5 * 60 * 1000, []);
 
     const handleOpen = useCallback(
         (appId: string) => {
@@ -72,23 +81,41 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
                 return;
             }
             const offset = windows.length * 30;
+            let width = 650;
+            let height = 520;
+            if (appId === 'terminal') {
+                width = 750;
+                height = 480;
+            } else if (appId === 'files') {
+                width = 850;
+                height = 520;
+            } else if (appId === 'calculator') {
+                width = 400;
+                height = 550;
+            }
             openWindow({
                 id: appId,
                 title: icon.name,
                 icon: icon.icon,
                 x: 180 + offset,
                 y: 50 + offset,
-                width: appId === 'terminal' ? 750 : appId === 'files' ? 850 : 650,
-                height: appId === 'terminal' ? 480 : 520,
+                width,
+                height,
             });
         },
         [openWindow, focusWindow, windows]
     );
 
     const welcomeSent = useRef(false);
+    const lastActivityRef = useRef(0);
+
+    useEffect(() => {
+        lastActivityRef.current = Date.now();
+    }, []);
 
     useEffect(() => {
         if (!initialized) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setInitialized(true);
             setTimeout(() => handleOpen('editor'), 600);
             if (!welcomeSent.current) {
@@ -108,11 +135,11 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
 
     useEffect(() => {
         const resetTimer = () => {
-            setLastActivity(Date.now());
+            lastActivityRef.current = Date.now();
             if (showScreensaver) setShowScreensaver(false);
         };
         const checkIdle = () => {
-            if (!showScreensaver && Date.now() - lastActivity > SCREENSAVER_TIMEOUT) {
+            if (!showScreensaver && Date.now() - lastActivityRef.current > SCREENSAVER_TIMEOUT) {
                 setShowScreensaver(true);
             }
         };
@@ -123,7 +150,7 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
             events.forEach((e) => window.removeEventListener(e, resetTimer));
             clearInterval(interval);
         };
-    }, [lastActivity, showScreensaver]);
+    }, [showScreensaver, SCREENSAVER_TIMEOUT]);
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
@@ -167,7 +194,7 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
     }, []);
 
     useEffect(() => {
-        const handleToggleMatrix = () => setMatrixMode(prev => !prev);
+        const handleToggleMatrix = () => setMatrixMode((prev) => !prev);
         window.addEventListener('toggle-matrix', handleToggleMatrix);
         return () => window.removeEventListener('toggle-matrix', handleToggleMatrix);
     }, []);
@@ -178,14 +205,15 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
         return () => clearInterval(t);
     }, []);
 
-    const formatUptime = (ms: number) => {
-        const s = Math.floor((Date.now() - ms) / 1000);
-        const m = Math.floor(s / 60);
+    const formatUptime = useCallback((startTime: number) => {
+        if (startTime === 0) return '0s';
+        const diff = Math.floor((Date.now() - startTime) / 1000);
+        const m = Math.floor(diff / 60);
         const h = Math.floor(m / 60);
         if (h > 0) return `${h}h ${m % 60}m`;
-        if (m > 0) return `${m}m ${s % 60}s`;
-        return `${s}s`;
-    };
+        if (m > 0) return `${m}m ${diff % 60}s`;
+        return `${diff}s`;
+    }, []);
 
     return (
         <>
@@ -230,7 +258,10 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
             </div>
 
             {/* 2. Desktop icons — z-index 10, hidden on mobile */}
-            <div className="fixed top-4 left-4 flex flex-col gap-1 hidden sm:flex" style={{ zIndex: 10 }}>
+            <div
+                className="fixed top-4 left-4 flex flex-col gap-1 hidden sm:flex"
+                style={{ zIndex: 10 }}
+            >
                 {desktopIcons.map((icon) => (
                     <div key={icon.id} className="desktop-icon" onClick={() => handleOpen(icon.id)}>
                         <i
@@ -246,20 +277,31 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
             </div>
 
             {/* Mobile app launcher grid */}
-            <div className="fixed inset-0 flex items-center justify-center sm:hidden p-4" style={{ zIndex: 5, bottom: '40px' }}>
+            <div
+                className="fixed inset-0 flex items-center justify-center sm:hidden p-4"
+                style={{ zIndex: 5, bottom: '40px' }}
+            >
                 <div className="grid grid-cols-3 gap-4 w-full max-w-sm">
                     {desktopIcons.map((icon) => (
                         <div
                             key={icon.id}
                             className="flex flex-col items-center gap-2 p-3 rounded-lg cursor-pointer active:scale-95 transition-transform"
-                            style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid var(--color-border)' }}
+                            style={{
+                                backgroundColor: 'rgba(255,255,255,0.04)',
+                                border: '1px solid var(--color-border)',
+                            }}
                             onClick={() => handleOpen(icon.id)}
                         >
                             <i
                                 className={`${icon.icon} text-2xl`}
                                 style={{ color: 'var(--color-primary)' }}
                             />
-                            <span className="text-[10px] text-center" style={{ color: 'var(--color-text-dim)' }}>{icon.name}</span>
+                            <span
+                                className="text-[10px] text-center"
+                                style={{ color: 'var(--color-text-dim)' }}
+                            >
+                                {icon.name}
+                            </span>
                         </div>
                     ))}
                 </div>
@@ -276,14 +318,30 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
                         backdropFilter: 'blur(8px)',
                     }}
                 >
-                    <div className="text-2xl font-bold font-mono" style={{ color: 'var(--color-primary)', textShadow: '0 0 10px var(--color-primary-glow-strong)' }}>
-                        {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    <div
+                        className="text-2xl font-bold font-mono"
+                        style={{
+                            color: 'var(--color-primary)',
+                            textShadow: '0 0 10px var(--color-primary-glow-strong)',
+                        }}
+                    >
+                        {time.toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                        })}
                     </div>
                     <div className="text-[10px] mt-1" style={{ color: 'var(--color-text-muted)' }}>
-                        {time.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                        {time.toLocaleDateString([], {
+                            weekday: 'long',
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric',
+                        })}
                     </div>
                     <div className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-dim)' }}>
-                        Uptime: {formatUptime(uptime)} · {windows.length} window{windows.length !== 1 ? 's' : ''}
+                        Uptime: {formatUptime(uptime)} · {windows.length} window
+                        {windows.length !== 1 ? 's' : ''}
                     </div>
                 </div>
             )}
@@ -292,43 +350,68 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
             <div className="hidden md:flex fixed left-4 bottom-4 gap-2" style={{ zIndex: 10 }}>
                 <button
                     className="px-2.5 py-1.5 text-[10px] rounded-sm border font-bold transition-all hover:scale-105 active:scale-95"
-                    style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-dim)', backgroundColor: 'rgba(10,10,10,0.8)' }}
-                    onClick={() => windows.forEach(w => maximizeWindow(w.id))}
+                    style={{
+                        borderColor: 'var(--color-border)',
+                        color: 'var(--color-text-dim)',
+                        backgroundColor: 'rgba(10,10,10,0.8)',
+                    }}
+                    onClick={() => windows.forEach((w) => maximizeWindow(w.id))}
                     title="Maximize all windows"
                 >
-                    <i className="fa-solid fa-expand mr-1" />MAX ALL
+                    <i className="fa-solid fa-expand mr-1" />
+                    MAX ALL
                 </button>
                 <button
                     className="px-2.5 py-1.5 text-[10px] rounded-sm border font-bold transition-all hover:scale-105 active:scale-95"
-                    style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-dim)', backgroundColor: 'rgba(10,10,10,0.8)' }}
-                    onClick={() => windows.forEach(w => minimizeWindow(w.id))}
+                    style={{
+                        borderColor: 'var(--color-border)',
+                        color: 'var(--color-text-dim)',
+                        backgroundColor: 'rgba(10,10,10,0.8)',
+                    }}
+                    onClick={() => windows.forEach((w) => minimizeWindow(w.id))}
                     title="Minimize all windows"
                 >
-                    <i className="fa-solid fa-compress mr-1" />MIN ALL
+                    <i className="fa-solid fa-compress mr-1" />
+                    MIN ALL
                 </button>
                 <button
                     className="px-2.5 py-1.5 text-[10px] rounded-sm border font-bold transition-all hover:scale-105 active:scale-95"
-                    style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-dim)', backgroundColor: 'rgba(10,10,10,0.8)' }}
-                    onClick={() => windows.forEach(w => closeWindow(w.id))}
+                    style={{
+                        borderColor: 'var(--color-border)',
+                        color: 'var(--color-text-dim)',
+                        backgroundColor: 'rgba(10,10,10,0.8)',
+                    }}
+                    onClick={() => windows.forEach((w) => closeWindow(w.id))}
                     title="Close all windows"
                 >
-                    <i className="fa-solid fa-xmark mr-1" />CLOSE ALL
+                    <i className="fa-solid fa-xmark mr-1" />
+                    CLOSE ALL
                 </button>
                 <button
                     className="px-2.5 py-1.5 text-[10px] rounded-sm border font-bold transition-all hover:scale-105 active:scale-95"
-                    style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-dim)', backgroundColor: 'rgba(10,10,10,0.8)' }}
-                    onClick={() => setMatrixMode(prev => !prev)}
+                    style={{
+                        borderColor: 'var(--color-border)',
+                        color: 'var(--color-text-dim)',
+                        backgroundColor: 'rgba(10,10,10,0.8)',
+                    }}
+                    onClick={() => setMatrixMode((prev) => !prev)}
                     title="Toggle matrix screensaver"
                 >
-                    <i className="fa-solid fa-code mr-1" />MATRIX
+                    <i className="fa-solid fa-code mr-1" />
+                    MATRIX
                 </button>
                 <button
                     className="px-2.5 py-1.5 text-[10px] rounded-sm border font-bold transition-all hover:scale-105 active:scale-95"
-                    style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-dim)', backgroundColor: 'rgba(10,10,10,0.8)' }}
-                    onClick={() => setShowClock(prev => !prev)}
+                    style={{
+                        borderColor: 'var(--color-border)',
+                        color: 'var(--color-text-dim)',
+                        backgroundColor: 'rgba(10,10,10,0.8)',
+                    }}
+                    onClick={() => setShowClock((prev) => !prev)}
                     title="Toggle clock widget"
                 >
-                    <i className={`fa-solid ${showClock ? 'fa-eye' : 'fa-eye-slash'} mr-1`} />CLOCK
+                    <i className={`fa-solid ${showClock ? 'fa-eye' : 'fa-eye-slash'} mr-1`} />
+                    CLOCK
                 </button>
             </div>
 
@@ -355,7 +438,14 @@ export const Desktop: React.FC<DesktopProps> = ({ githubData }) => {
             <NotificationToast />
 
             {/* Matrix screensaver */}
-            {(showScreensaver || matrixMode) && <MatrixScreensaver onWake={() => { setShowScreensaver(false); setMatrixMode(false); }} />}
+            {(showScreensaver || matrixMode) && (
+                <MatrixScreensaver
+                    onWake={() => {
+                        setShowScreensaver(false);
+                        setMatrixMode(false);
+                    }}
+                />
+            )}
         </>
     );
 };
@@ -371,8 +461,7 @@ const WindowRenderer: React.FC<{ githubData: GitHubData | null }> = ({ githubDat
                     {win.id === 'terminal' && <TerminalApp githubData={githubData} />}
                     {win.id === 'files' && <FileManagerApp githubData={githubData} />}
                     {win.id === 'editor' && <TextEditorApp user={user} />}
-                    {win.id === 'monitor' && <SystemMonitorApp />}
-                    {win.id === 'network' && <NetworkManagerApp />}
+                    {win.id === 'calculator' && <CalculatorApp />}
                     {win.id === 'mail' && <MailClientApp />}
                     {win.id === 'settings' && <SettingsApp />}
                     {win.id === 'tetris' && <TetrisGame />}

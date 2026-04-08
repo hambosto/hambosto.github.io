@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useRef, useCallback, useMemo, useEffect } from 'react';
 
 interface ContextMenuProps {
     x: number;
@@ -18,9 +18,11 @@ const menuItems = [
     { icon: 'fa-solid fa-keyboard', label: 'Keyboard Shortcuts', action: 'shortcuts' },
 ];
 
+const MENU_WIDTH = 220;
+const MENU_HEIGHT = 340;
+
 export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, onOpenApp }) => {
     const menuRef = useRef<HTMLDivElement>(null);
-    const [pos, setPos] = useState({ x, y });
 
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
@@ -32,32 +34,33 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, onOpenA
         return () => document.removeEventListener('mousedown', handleClick);
     }, [onClose]);
 
-    useEffect(() => {
-        const menuW = 220;
-        const menuH = 340;
-        const adjustedX = x + menuW > window.innerWidth ? x - menuW : x;
-        const adjustedY = y + menuH > window.innerHeight ? y - menuH : y;
-        setPos({ x: adjustedX, y: adjustedY });
+    const pos = useMemo(() => {
+        const adjustedX = x + MENU_WIDTH > window.innerWidth ? x - MENU_WIDTH : x;
+        const adjustedY = y + MENU_HEIGHT > window.innerHeight ? y - MENU_HEIGHT : y;
+        return { x: adjustedX, y: adjustedY };
     }, [x, y]);
 
-    const handleAction = useCallback((action: string) => {
-        if (action === 'refresh') {
+    const handleAction = useCallback(
+        (action: string) => {
+            if (action === 'refresh') {
+                onClose();
+                return;
+            }
+            if (action === 'search') {
+                window.dispatchEvent(new CustomEvent('open-search'));
+                onClose();
+                return;
+            }
+            if (action === 'shortcuts') {
+                window.dispatchEvent(new CustomEvent('open-shortcuts'));
+                onClose();
+                return;
+            }
+            onOpenApp(action);
             onClose();
-            return;
-        }
-        if (action === 'search') {
-            window.dispatchEvent(new CustomEvent('open-search'));
-            onClose();
-            return;
-        }
-        if (action === 'shortcuts') {
-            window.dispatchEvent(new CustomEvent('open-shortcuts'));
-            onClose();
-            return;
-        }
-        onOpenApp(action);
-        onClose();
-    }, [onOpenApp, onClose]);
+        },
+        [onOpenApp, onClose]
+    );
 
     return (
         <div
@@ -72,12 +75,22 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, onOpenA
                 minWidth: 220,
             }}
         >
-            <div className="px-3 py-2 text-[10px] font-bold tracking-wider" style={{ color: 'var(--color-text-muted)', borderBottom: '1px solid var(--color-border)' }}>
+            <div
+                className="px-3 py-2 text-[10px] font-bold tracking-wider"
+                style={{
+                    color: 'var(--color-text-muted)',
+                    borderBottom: '1px solid var(--color-border)',
+                }}
+            >
                 DESKTOP MENU
             </div>
-            {menuItems.map((item, i) => (
+            {menuItems.map((item, i) =>
                 'divider' in item && item.divider ? (
-                    <div key={i} className="my-1" style={{ borderTop: '1px solid var(--color-border)' }} />
+                    <div
+                        key={i}
+                        className="my-1"
+                        style={{ borderTop: '1px solid var(--color-border)' }}
+                    />
                 ) : (
                     <div
                         key={i}
@@ -85,7 +98,8 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, onOpenA
                         style={{ color: 'var(--color-text-dim)' }}
                         onClick={() => handleAction(item.action!)}
                         onMouseEnter={(e) => {
-                            (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-primary-glow)';
+                            (e.currentTarget as HTMLElement).style.backgroundColor =
+                                'var(--color-primary-glow)';
                             (e.currentTarget as HTMLElement).style.color = 'var(--color-text)';
                         }}
                         onMouseLeave={(e) => {
@@ -93,11 +107,14 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, onOpenA
                             (e.currentTarget as HTMLElement).style.color = 'var(--color-text-dim)';
                         }}
                     >
-                        <i className={`${item.icon} w-4 text-center text-xs`} style={{ color: 'var(--color-primary)' }} />
+                        <i
+                            className={`${item.icon} w-4 text-center text-xs`}
+                            style={{ color: 'var(--color-primary)' }}
+                        />
                         <span>{item.label}</span>
                     </div>
                 )
-            ))}
+            )}
         </div>
     );
 };

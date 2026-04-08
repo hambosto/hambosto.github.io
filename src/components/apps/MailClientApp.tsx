@@ -1,9 +1,16 @@
 import React, { useState, type FormEvent, type ChangeEvent } from 'react';
 import { CONFIG } from '../../utils/config';
 
+type FormData = Record<string, string>;
+
 export const MailClientApp: React.FC = () => {
     const [status, setStatus] = useState<'IDLE' | 'SENDING' | 'SENT' | 'ERROR'>('IDLE');
-    const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+    const [formData, setFormData] = useState<FormData>({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+    });
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -119,7 +126,7 @@ export const MailClientApp: React.FC = () => {
                                 id={field.id}
                                 name={field.id}
                                 type={field.type}
-                                value={(formData as any)[field.id]}
+                                value={formData[field.id]}
                                 onChange={handleChange}
                                 style={fieldStyle}
                                 placeholder={field.placeholder}
